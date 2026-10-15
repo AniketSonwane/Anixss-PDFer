@@ -1,0 +1,426 @@
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap');
+
+/* Anixss-PDFer Terminal Monochrome Design System */
+:root {
+  --term-bg: #ffffff;
+  --term-fg: #000000;
+  --term-border: #000000;
+  --term-gray-light: #f7f7f7;
+  --term-gray-mid: #e5e5e5;
+  --term-gray-dark: #666666;
+}
+
+*, ::before, ::after {
+  box-sizing: border-box;
+  border-color: #000000;
+}
+
+html {
+  font-family: 'JetBrains Mono', 'IBM Plex Mono', 'Courier New', monospace;
+  background-color: #ffffff;
+  color: #000000;
+  line-height: 1.5;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'JetBrains Mono', 'IBM Plex Mono', 'Courier New', monospace;
+  background-color: #ffffff;
+  color: #000000;
+  min-height: 100vh;
+}
+
+::selection {
+  background-color: #000000;
+  color: #ffffff;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+}
+::-webkit-scrollbar-track {
+  background: #ffffff;
+  border-left: 1px solid #000000;
+  border-top: 1px solid #000000;
+}
+::-webkit-scrollbar-thumb {
+  background: #000000;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #333333;
+}
+
+/* Terminal Buttons */
+.term-btn {
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 700;
+  font-size: 0.8125rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 0.5rem 1rem;
+  border: 1px solid #000000;
+  background-color: #ffffff;
+  color: #000000;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: none;
+  user-select: none;
+  white-space: nowrap;
+  line-height: 1.25;
+}
+
+.term-btn:hover:not(:disabled) {
+  background-color: #000000;
+  color: #ffffff;
+}
+
+.term-btn:active:not(:disabled) {
+  transform: translate(1px, 1px);
+}
+
+.term-btn:disabled {
+  border-color: #999999;
+  color: #999999;
+  background-color: #f7f7f7;
+  cursor: not-allowed;
+}
+
+.term-btn-primary {
+  background-color: #000000;
+  color: #ffffff;
+  border: 2px solid #000000;
+}
+
+.term-btn-primary:hover:not(:disabled) {
+  background-color: #ffffff;
+  color: #000000;
+}
+
+.term-btn-danger {
+  border-color: #000000;
+  background-color: #ffffff;
+  color: #000000;
+}
+.term-btn-danger:hover:not(:disabled) {
+  background-color: #000000;
+  color: #ffffff;
+  text-decoration: line-through;
+}
+
+/* Terminal Input / Select */
+.term-input, .term-select {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.875rem;
+  border: 1px solid #000000;
+  background-color: #ffffff;
+  color: #000000;
+  padding: 0.5rem 0.75rem;
+  outline: none;
+  width: 100%;
+  border-radius: 0;
+}
+
+.term-input:focus, .term-select:focus {
+  outline: 2px solid #000000;
+  outline-offset: 1px;
+}
+
+/* Terminal Cards */
+.term-card {
+  border: 1px solid #000000;
+  background-color: #ffffff;
+  transition: none;
+}
+
+.term-card-interactive {
+  cursor: pointer;
+  transition: transform 0.05s ease, background-color 0.05s ease;
+}
+
+.term-card-interactive:hover {
+  background-color: #000000;
+  color: #ffffff;
+}
+
+.term-card-interactive:hover .term-invert-target {
+  border-color: #ffffff !important;
+  color: #ffffff !important;
+}
+
+.term-card-interactive:hover svg {
+  stroke: #ffffff !important;
+}
+
+/* Badges */
+.term-badge {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  padding: 0.15rem 0.45rem;
+  border: 1px solid #000000;
+  background-color: #ffffff;
+  color: #000000;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  white-space: nowrap;
+}
+
+.term-badge-invert {
+  background-color: #000000;
+  color: #ffffff;
+  border-color: #000000;
+}
+
+/* Dropzone */
+.term-dropzone {
+  border: 2px dashed #000000;
+  background-color: #ffffff;
+  transition: none;
+}
+
+.term-dropzone.dragover {
+  background-color: #000000;
+  color: #ffffff;
+  border-style: solid;
+}
+
+.term-dropzone.dragover * {
+  color: #ffffff;
+  border-color: #ffffff;
+}
+
+/* Terminal Log Console */
+.term-console {
+  background-color: #000000;
+  color: #ffffff;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  line-height: 1.45;
+  padding: 0.75rem 1rem;
+  border: 1px solid #000000;
+  max-height: 180px;
+  overflow-y: auto;
+}
+
+.term-console-line {
+  white-space: pre-wrap;
+  word-break: break-all;
+  margin-bottom: 2px;
+}
+
+.term-console-time {
+  color: #888888;
+}
+
+.term-console-success {
+  color: #ffffff;
+  font-weight: 700;
+}
+
+.term-console-warn {
+  color: #cccccc;
+}
+
+.term-console-error {
+  color: #ffffff;
+  background-color: #444444;
+  padding: 0 4px;
+}
+
+/* Page Thumbnail Card */
+.page-thumb-card {
+  border: 1px solid #000000;
+  background-color: #ffffff;
+  padding: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  user-select: none;
+}
+
+.page-thumb-card.marked-for-removal {
+  background-color: #f3f3f3;
+  border: 2px dashed #000000;
+}
+
+.page-thumb-card.marked-for-removal canvas {
+  opacity: 0.35;
+  filter: grayscale(100%);
+}
+
+.page-thumb-card.marked-for-removal::after {
+  content: '[DELETE]';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(-12deg);
+  background: #000000;
+  color: #ffffff;
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  padding: 4px 10px;
+  border: 1px solid #ffffff;
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 10;
+}
+
+/* Cursor & Blinker */
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+.term-cursor {
+  display: inline-block;
+  width: 8px;
+  height: 14px;
+  background-color: #000000;
+  vertical-align: middle;
+  animation: blink 1s step-start infinite;
+}
+
+.status-pulse {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  background-color: #000000;
+  animation: blink 1.5s ease-in-out infinite;
+}
+
+/* Print utilities */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  #printableArea, #printableArea * {
+    visibility: visible;
+  }
+  #printableArea {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+  }
+}
+
+/* Stacked Document Paper Effect (Matches Smallpdf multi-page visual) */
+.stacked-paper {
+  position: relative;
+  transition: transform 0.1s ease;
+}
+
+.stacked-paper::before {
+  content: '';
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  bottom: 4px;
+  left: 4px;
+  background-color: #ffffff;
+  border: 1px solid #000000;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.stacked-paper::after {
+  content: '';
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  bottom: 8px;
+  left: 8px;
+  background-color: #ffffff;
+  border: 1px solid #000000;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.stacked-paper-content {
+  position: relative;
+  z-index: 2;
+  background-color: #ffffff;
+}
+
+/* Drag and Drop Visual Feedback */
+.is-dragging {
+  opacity: 0.35 !important;
+  transform: scale(0.97);
+  cursor: grabbing !important;
+}
+
+.drag-target-left {
+  border-left: 4px solid #000000 !important;
+  transform: translateX(4px);
+}
+
+.drag-target-right {
+  border-right: 4px solid #000000 !important;
+  transform: translateX(-4px);
+}
+
+.drag-target-top {
+  border-top: 3px solid #000000 !important;
+}
+
+.drag-target-bottom {
+  border-bottom: 3px solid #000000 !important;
+}
+
+.card-plus-btn {
+  width: 24px;
+  height: 24px;
+  border-radius: 9999px;
+  border: 1px solid #000000;
+  background-color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.15s ease;
+}
+
+.card-plus-btn:hover {
+  background-color: #000000;
+  color: #ffffff;
+  transform: scale(1.15);
+}
+
+/* Responsive Preview Canvas Aspect Ratio Protection (Exact A4 size, never stretched or letterboxed) */
+#watermarkPreviewCanvas,
+#pageNumbersPreviewCanvas,
+#nupPreviewCanvas,
+#redactBaseCanvas,
+#redactOverlayCanvas,
+#previewFullCanvas,
+.responsive-preview-canvas {
+  max-width: 100% !important;
+  display: block;
+  box-sizing: border-box;
+}
+
+#watermarkCanvasWrapper,
+#pageNumbersCanvasWrapper,
+#nupCanvasWrapper,
+#redactCanvasWrapper {
+  max-width: 100% !important;
+  display: inline-block;
+  vertical-align: middle;
+  position: relative;
+  box-sizing: border-box;
+}
+

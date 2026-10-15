@@ -1,0 +1,333 @@
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Terminal & Monochrome Core Styling */
+:root {
+  --term-bg: #ffffff;
+  --term-fg: #000000;
+  --term-border: #000000;
+  --term-gray-light: #f7f7f7;
+  --term-gray-mid: #e5e5e5;
+  --term-gray-dark: #666666;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'JetBrains Mono', 'IBM Plex Mono', 'Courier New', monospace;
+  background-color: var(--term-bg);
+  color: var(--term-fg);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+::selection {
+  background-color: #000000;
+  color: #ffffff;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #ffffff;
+  border-left: 1px solid #000000;
+  border-top: 1px solid #000000;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #000000;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #333333;
+}
+
+/* Terminal Button */
+.term-btn {
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 700;
+  font-size: 0.8125rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 0.5rem 1rem;
+  border: 1px solid #000000;
+  background-color: #ffffff;
+  color: #000000;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: none;
+  user-select: none;
+  white-space: nowrap;
+}
+
+.term-btn:hover:not(:disabled) {
+  background-color: #000000;
+  color: #ffffff;
+}
+
+.term-btn:active:not(:disabled) {
+  transform: translate(1px, 1px);
+}
+
+.term-btn:disabled {
+  border-color: #999999;
+  color: #999999;
+  background-color: #f7f7f7;
+  cursor: not-allowed;
+}
+
+.term-btn-primary {
+  background-color: #000000;
+  color: #ffffff;
+  border: 2px solid #000000;
+}
+
+.term-btn-primary:hover:not(:disabled) {
+  background-color: #ffffff;
+  color: #000000;
+}
+
+/* Terminal Input / Select */
+.term-input, .term-select {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.875rem;
+  border: 1px solid #000000;
+  background-color: #ffffff;
+  color: #000000;
+  padding: 0.5rem 0.75rem;
+  outline: none;
+  width: 100%;
+  border-radius: 0;
+}
+
+.term-input:focus, .term-select:focus {
+  outline: 2px solid #000000;
+  outline-offset: 1px;
+}
+
+/* Terminal Card */
+.term-card {
+  border: 1px solid #000000;
+  background-color: #ffffff;
+  transition: none;
+}
+
+.term-card-interactive {
+  cursor: pointer;
+}
+
+.term-card-interactive:hover {
+  background-color: #000000;
+  color: #ffffff;
+}
+
+.term-card-interactive:hover .term-card-invert {
+  border-color: #ffffff;
+  color: #ffffff;
+}
+
+.term-card-interactive:hover .term-card-icon {
+  stroke: #ffffff;
+  fill: #ffffff;
+}
+
+/* Terminal Badge */
+.term-badge {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  padding: 0.15rem 0.4rem;
+  border: 1px solid #000000;
+  background-color: #ffffff;
+  color: #000000;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.term-badge-invert {
+  background-color: #000000;
+  color: #ffffff;
+}
+
+/* Dropzone */
+.term-dropzone {
+  border: 2px dashed #000000;
+  background-color: #ffffff;
+  transition: none;
+}
+
+.term-dropzone.dragover {
+  background-color: #000000;
+  color: #ffffff;
+  border-style: solid;
+}
+
+.term-dropzone.dragover * {
+  color: #ffffff;
+  border-color: #ffffff;
+}
+
+/* Terminal Log Console */
+.term-console {
+  background-color: #000000;
+  color: #ffffff;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  line-height: 1.4;
+  padding: 0.75rem 1rem;
+  border: 1px solid #000000;
+  max-height: 160px;
+  overflow-y: auto;
+}
+
+.term-console-line {
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+.term-console-time {
+  color: #888888;
+}
+
+.term-console-success {
+  color: #ffffff;
+  font-weight: 700;
+}
+
+.term-console-warn {
+  color: #cccccc;
+  text-decoration: underline;
+}
+
+.term-console-error {
+  color: #ffffff;
+  background-color: #333333;
+  padding: 0 4px;
+}
+
+/* Page Thumbnail Card */
+.page-thumb-card {
+  border: 1px solid #000000;
+  background-color: #ffffff;
+  padding: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  user-select: none;
+}
+
+.page-thumb-card.marked-for-removal {
+  background-color: #f0f0f0;
+  border: 2px dashed #000000;
+  opacity: 0.65;
+}
+
+.page-thumb-card.marked-for-removal::after {
+  content: '[MARKED FOR REMOVAL]';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(-15deg);
+  background: #000000;
+  color: #ffffff;
+  font-size: 0.6875rem;
+  font-weight: 800;
+  padding: 4px 8px;
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 10;
+}
+
+/* Pulse Animation */
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+.term-cursor {
+  display: inline-block;
+  width: 8px;
+  height: 14px;
+  background-color: #000000;
+  vertical-align: middle;
+  animation: blink 1s step-start infinite;
+}
+
+.is-dragging {
+  opacity: 0.35 !important;
+  transform: scale(0.97);
+  cursor: grabbing !important;
+}
+
+.drag-target-left {
+  border-left: 4px solid #000000 !important;
+  transform: translateX(4px);
+}
+
+.drag-target-right {
+  border-right: 4px solid #000000 !important;
+  transform: translateX(-4px);
+}
+
+.drag-target-top {
+  border-top: 3px solid #000000 !important;
+}
+
+.drag-target-bottom {
+  border-bottom: 3px solid #000000 !important;
+}
+
+/* Print Utilities */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  #printableArea, #printableArea * {
+    visibility: visible;
+  }
+  #printableArea {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+  }
+}
+
+/* Responsive Preview Canvas Aspect Ratio Protection (Exact A4 size, never stretched or letterboxed) */
+#watermarkPreviewCanvas,
+#pageNumbersPreviewCanvas,
+#nupPreviewCanvas,
+#redactBaseCanvas,
+#redactOverlayCanvas,
+#previewFullCanvas,
+.responsive-preview-canvas {
+  max-width: 100% !important;
+  display: block;
+  box-sizing: border-box;
+}
+
+#watermarkCanvasWrapper,
+#pageNumbersCanvasWrapper,
+#nupCanvasWrapper,
+#redactCanvasWrapper {
+  max-width: 100% !important;
+  display: inline-block;
+  vertical-align: middle;
+  position: relative;
+  box-sizing: border-box;
+}

@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Add Page Numbers to PDF — Anixss-PDFer</title>
+  <link rel="icon" type="image/svg+xml" href="./assets/favicon.svg">
+  <meta name="description" content="Add customizable page numbers to your PDF documents with custom formats, positions, margins, fonts, and live visual preview. 100% client-side.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            mono: ['"JetBrains Mono"', '"IBM Plex Mono"', 'Menlo', 'Consolas', 'monospace'],
+            sans: ['"JetBrains Mono"', '"IBM Plex Mono"', 'Menlo', 'Consolas', 'monospace']
+          }
+        }
+      }
+    }
+  </script>
+
+  <link rel="stylesheet" href="src/output.css?v=10">
+
+  <script src="./assets/vendor/pdf-lib.min.js"></script>
+  <script>
+    if (!window.PDFLib) {
+      document.write('<script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"><\/script>');
+    }
+  </script>
+
+  <script src="./assets/vendor/pdf.min.js"></script>
+  <script>
+    if (!window.pdfjsLib) {
+      document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"><\/script>');
+    }
+  </script>
+</head>
+<body class="bg-white text-black font-mono flex flex-col min-h-screen antialiased selection:bg-black selection:text-white" data-page="page-numbers">
+
+  <!-- HEADER -->
+  <header class="border-b border-black sticky top-0 bg-white z-40">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex flex-wrap items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <a href="index.html" id="navBrand" class="flex items-center gap-2.5 group select-none text-black hover:opacity-90 transition-opacity" title="Anixss-PDFer Home">
+          <div class="w-8 h-8 sm:w-9 sm:h-9 bg-black rounded flex items-center justify-center p-1 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] group-hover:translate-x-0.5 group-hover:translate-y-0.5 group-hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] transition-all">
+            <img src="./assets/logo.svg" alt="Anixss-PDFer" class="w-full h-full object-contain" />
+          </div>
+          <div class="flex items-center gap-1.5">
+            <span class="text-lg sm:text-xl font-extrabold tracking-tight text-black font-mono">Anixss<span class="text-neutral-400 font-normal">-</span>PDFer</span>
+            <span class="text-[10px] font-mono border border-black px-1.5 py-0.5 bg-black text-white font-bold tracking-wider">v1.0</span>
+          </div>
+        </a>
+      </div>
+
+      <nav class="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm font-bold">
+        <a href="index.html" class="px-2.5 py-1 border border-transparent hover:border-black hover:bg-black hover:text-white transition-none">HOME</a>
+        <a href="about.html" class="px-2.5 py-1 border border-transparent hover:border-black hover:bg-black hover:text-white transition-none">ABOUT</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- MAIN WORKSPACE -->
+  <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 py-6 sm:py-8 space-y-6">
+
+    <!-- Workspace Top Toolbar -->
+    <div class="border-b border-black pb-4 flex flex-wrap items-center justify-between gap-3">
+      <div class="flex items-center gap-3">
+        <a href="index.html" class="term-btn text-xs py-1.5 px-3">
+          ← ALL TOOLS
+        </a>
+        <div>
+          <h1 class="text-lg sm:text-xl font-bold tracking-tight">PAGE NUMBERS</h1>
+        </div>
+      </div>
+      <div class="flex items-center gap-2 flex-wrap">
+        <button type="button" id="btnClearTool" class="term-btn text-xs py-1.5 px-3">
+          RESET
+        </button>
+      </div>
+    </div>
+
+    <!-- PAGE NUMBERS PANEL -->
+    <div id="panel_page_numbers" class="space-y-6">
+      
+      <!-- Dropzone -->
+      <div id="pageNumbersDropzone" class="term-dropzone p-6 sm:p-8 text-center flex flex-col items-center justify-center gap-3 cursor-pointer">
+        <div class="text-sm font-bold">[ DROP PDF HERE TO ADD PAGE NUMBERS ]</div>
+        <div class="text-xs text-neutral-600">Insert custom page numbering with custom format, position, font, and cover-page exclusion.</div>
+        <button type="button" id="btnPageNumbersSelect" class="term-btn term-btn-primary text-xs py-1.5 px-4 mt-1">
+          SELECT PDF FILE
+        </button>
+        <input type="file" id="pageNumbersFileInput" accept=".pdf" class="hidden" />
+      </div>
+
+      <!-- Config & Live Preview Section -->
+      <div id="pageNumbersConfigSection" class="space-y-4 hidden">
+        
+        <!-- TOP COMMAND TOOLBAR (Standardized) -->
+        <div class="border border-black bg-white p-2 sm:p-2.5 flex flex-wrap sm:flex-nowrap items-center justify-between gap-2 sm:gap-3 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] min-w-0 w-full">
+          <!-- Left: Document Status Badge -->
+          <div class="flex items-center gap-1.5 sm:gap-2 min-w-0 flex-1 mr-1 sm:mr-2">
+            <span class="font-bold text-[11px] sm:text-xs bg-black text-white px-2 py-1 flex-shrink-0 select-none whitespace-nowrap">PAGE NUMBERS</span>
+          </div>
+
+          <!-- Right: Rename, Preview, Finish -->
+          <div class="flex items-center gap-1.5 sm:gap-2.5 flex-shrink-0 flex-wrap sm:flex-nowrap w-full sm:w-auto justify-end sm:justify-start">
+            <!-- RENAME FILE BEFORE EXPORT -->
+            <div class="flex items-center border border-black bg-white px-2 py-1 text-xs font-mono flex-shrink-0">
+              <label for="pageNumbersOutputFilename" class="text-neutral-500 font-bold uppercase flex items-center gap-1 select-none whitespace-nowrap mr-1">
+                <span class="w-4 h-4 rounded-xs bg-amber-100 text-amber-800 flex items-center justify-center text-[10px] flex-shrink-0">✏️</span>
+                <span class="hidden md:inline">NAME:</span>
+              </label>
+              <input type="text" id="pageNumbersOutputFilename" class="font-mono font-bold text-black bg-transparent border-none outline-none w-20 xs:w-28 sm:w-32 md:w-40 placeholder-neutral-400 truncate" value="numbered_document" placeholder="output_name" title="Rename output file before exporting" />
+              <span class="text-neutral-500 font-bold select-none whitespace-nowrap">.pdf</span>
+            </div>
+
+            <button type="button" id="btnPreviewPageNumbersDoc" class="term-btn text-xs py-1.5 px-2.5 sm:px-3 font-bold flex items-center gap-1 hover:bg-black hover:text-white transition-none uppercase font-mono tracking-wider flex-shrink-0 whitespace-nowrap" title="Preview Document Before Downloading">
+              <span class="text-sky-500">👁</span>
+              <span class="hidden sm:inline">PREVIEW DOCUMENT</span>
+              <span class="sm:hidden">PREVIEW</span>
+            </button>
+            <button type="button" id="btnProcessPageNumbers" class="term-btn term-btn-primary text-xs py-1.5 px-4 sm:px-6 font-bold flex items-center gap-1.5 uppercase font-mono tracking-wider flex-shrink-0 whitespace-nowrap">
+              <span>FINISH</span>
+              <span>→</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- SUB-TOOLBAR: Document Meta & Change File -->
+        <div class="border border-black bg-neutral-50 px-3.5 py-2 flex flex-wrap items-center justify-between gap-2 text-xs font-mono">
+          <div class="flex items-center gap-2 flex-wrap">
+            <span class="font-bold">SOURCE:</span>
+            <span id="pageNumbersFileMeta" class="font-bold text-black truncate max-w-sm sm:max-w-md">document.pdf (0 pages)</span>
+            <button type="button" id="btnChangePageNumbersFile" class="term-btn text-[11px] py-0.5 px-2" title="Change PDF file">
+              CHANGE FILE
+            </button>
+          </div>
+        </div>
+
+        <!-- Configuration Grid Box -->
+        <div class="border border-black p-4 sm:p-6 bg-white space-y-6">
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          
+          <!-- Left Column: Controls (5 cols) -->
+          <div class="lg:col-span-5 space-y-4">
+            
+            <!-- Numbering Format -->
+            <div class="space-y-1">
+              <label for="numFormatPreset" class="text-xs font-bold block">NUMBERING FORMAT</label>
+              <select id="numFormatPreset" class="term-select w-full text-xs p-2">
+                <option value="Page {n} of {total}" selected>Page {n} of {total} (e.g. Page 1 of 10)</option>
+                <option value="{n}">{n} (e.g. 1, 2, 3)</option>
+                <option value="Page {n}">Page {n} (e.g. Page 1, Page 2)</option>
+                <option value="{n} / {total}">{n} / {total} (e.g. 1 / 10)</option>
+                <option value="- {n} -">- {n} - (e.g. - 1 -, - 2 -)</option>
+                <option value="CUSTOM">[ Custom Format... ]</option>
+              </select>
+              
+              <div id="customFormatWrapper" class="pt-1.5 hidden">
+                <input type="text" id="customFormatInput" value="Page {n} of {total}" class="term-input w-full text-xs p-1.5 font-mono" placeholder="Use {n} for number, {total} for total pages" />
+                <span class="text-[10px] text-neutral-500 font-mono">Use {n} for page number, {total} for page count</span>
+              </div>
+            </div>
+
+            <!-- Position Selector Matrix (3x2 grid) -->
+            <div class="space-y-1.5">
+              <label class="text-xs font-bold block">POSITION ON PAGE</label>
+              <div class="grid grid-cols-3 gap-1.5 text-[11px] font-mono">
+                <button type="button" class="term-btn py-1.5 px-1 btn-pos" data-pos="top-left">Top Left</button>
+                <button type="button" class="term-btn py-1.5 px-1 btn-pos" data-pos="top-center">Top Center</button>
+                <button type="button" class="term-btn py-1.5 px-1 btn-pos" data-pos="top-right">Top Right</button>
+                <button type="button" class="term-btn py-1.5 px-1 btn-pos" data-pos="bottom-left">Bottom Left</button>
+                <button type="button" class="term-btn term-btn-primary py-1.5 px-1 btn-pos" data-pos="bottom-center">Bottom Center</button>
+                <button type="button" class="term-btn py-1.5 px-1 btn-pos" data-pos="bottom-right">Bottom Right</button>
+              </div>
+              <input type="hidden" id="numPosition" value="bottom-center" />
+            </div>
+
+            <!-- Margins & Starting Number -->
+            <div class="grid grid-cols-2 gap-3">
+              <div class="space-y-1">
+                <div class="flex items-center justify-between text-xs font-bold">
+                  <label for="numMargin">MARGIN</label>
+                  <span id="numMarginDisplay">36 pt</span>
+                </div>
+                <input type="range" id="numMargin" min="12" max="72" value="36" class="w-full cursor-pointer accent-black" />
+              </div>
+
+              <div class="space-y-1">
+                <label for="numStart" class="text-xs font-bold block">START AT</label>
+                <input type="number" id="numStart" min="1" value="1" class="term-input w-full text-xs p-1.5 font-mono" />
+              </div>
+            </div>
+
+            <!-- Font & Font Size -->
+            <div class="grid grid-cols-2 gap-3">
+              <div class="space-y-1">
+                <label for="numFont" class="text-xs font-bold block">FONT</label>
+                <select id="numFont" class="term-select w-full text-xs p-1.5">
+                  <option value="Helvetica" selected>Helvetica</option>
+                  <option value="TimesRoman">Times Roman</option>
+                  <option value="Courier">Courier Mono</option>
+                </select>
+              </div>
+              <div class="space-y-1">
+                <div class="flex items-center justify-between text-xs font-bold">
+                  <label for="numFontSize">FONT SIZE</label>
+                  <span id="numFontSizeDisplay">10 pt</span>
+                </div>
+                <input type="range" id="numFontSize" min="7" max="22" value="10" class="w-full cursor-pointer accent-black" />
+              </div>
+            </div>
+
+            <!-- Color -->
+            <div class="space-y-1">
+              <label for="numColor" class="text-xs font-bold block">COLOR</label>
+              <div class="flex items-center gap-2 flex-wrap">
+                <input type="color" id="numColor" value="#000000" class="h-8 w-10 border border-black p-0 cursor-pointer bg-white" />
+                <select id="numColorPreset" class="term-select flex-1 text-xs p-1.5">
+                  <option value="#000000" selected>Solid Black</option>
+                  <option value="#4b5563">Charcoal Gray</option>
+                  <option value="#9ca3af">Light Gray</option>
+                  <option value="#ffffff">White (for dark pages)</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Special Options Checkboxes -->
+            <div class="border-t border-black pt-3 space-y-2 text-xs">
+              <label class="flex items-center gap-2 cursor-pointer font-bold">
+                <input type="checkbox" id="chkSkipCover" class="accent-black h-4 w-4" />
+                <span>Skip Cover Page (Do not number Page 1)</span>
+              </label>
+              <label class="flex items-center gap-2 cursor-pointer text-neutral-700">
+                <input type="checkbox" id="chkAlternatingMargins" class="accent-black h-4 w-4" />
+                <span>Alternating Margins (Duplex book outside margins)</span>
+              </label>
+            </div>
+
+            <!-- Page Scope -->
+            <div class="border-t border-black pt-3 space-y-2">
+              <label class="text-xs font-bold block">// PAGE RANGE</label>
+              <div class="grid grid-cols-2 gap-2 text-xs">
+                <label class="flex items-center gap-1.5 cursor-pointer">
+                  <input type="radio" name="numScope" value="all" checked class="accent-black" />
+                  <span>All Pages</span>
+                </label>
+                <label class="flex items-center gap-1.5 cursor-pointer">
+                  <input type="radio" name="numScope" value="range" class="accent-black" />
+                  <span>Custom Range</span>
+                </label>
+              </div>
+
+              <div id="numRangeWrapper" class="pt-1 hidden">
+                <input type="text" id="numRangeInput" class="term-input w-full text-xs p-2" placeholder="e.g. 2-10, 14" />
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Right Column: Live Visual Preview (7 cols) -->
+          <div class="lg:col-span-7 flex flex-col space-y-3">
+            <div class="flex items-center justify-between border-b border-black pb-2 text-xs">
+              <span class="font-bold">LIVE PREVIEW</span>
+              
+              <!-- Page Navigator -->
+              <div class="flex items-center gap-2 font-mono">
+                <button type="button" id="btnNumPrevPage" class="term-btn text-xs py-0.5 px-2">
+                  &lt; PREV
+                </button>
+                <span id="numPageIndicator" class="font-bold">PAGE 1 OF 1</span>
+                <button type="button" id="btnNumNextPage" class="term-btn text-xs py-0.5 px-2">
+                  NEXT &gt;
+                </button>
+              </div>
+            </div>
+
+            <!-- Live Canvas Container -->
+            <div class="border border-black bg-neutral-100 p-2 sm:p-4 flex items-center justify-center min-h-[340px] sm:min-h-[440px] overflow-auto">
+              <div id="pageNumbersCanvasWrapper" class="relative shadow-md bg-white border border-black inline-block max-w-full">
+                <canvas id="pageNumbersPreviewCanvas" class="block max-w-full mx-auto"></canvas>
+              </div>
+            </div>
+
+            <div class="text-[11px] text-neutral-500 font-mono text-center">
+              * Page number position and format update live on the preview.
+            </div>
+          </div>
+
+        </div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- FULL PAGE PREVIEW MODAL / LIGHTBOX -->
+  <div id="pagePreviewModal" class="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-2 sm:p-4 hidden backdrop-blur-[1px]">
+    <div class="bg-white border-2 border-black max-w-5xl w-full h-[94vh] flex flex-col shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+      
+      <!-- Modal Header -->
+      <div class="bg-black text-white px-3 sm:px-4 py-2.5 flex items-center justify-between gap-3 text-xs font-mono font-bold select-none border-b border-black">
+        <div class="flex items-center gap-2 truncate">
+          <span class="text-neutral-400 hidden sm:inline">PREVIEW:</span>
+          <span id="previewModalTitle" class="truncate text-white max-w-[120px] sm:max-w-md text-[11px] sm:text-xs">document.pdf</span>
+          <span id="previewModalBadge" class="bg-white text-black px-1.5 py-0.2 text-[10px]">PAGE 1 / 1</span>
+        </div>
+        
+        <!-- Controls: Zoom, Rotate, Close -->
+        <div class="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
+          <button type="button" id="btnPreviewZoomOut" class="term-btn text-xs py-0.5 px-2 bg-neutral-800 text-white border-neutral-700 hover:bg-white hover:text-black" title="Zoom Out (-)">-</button>
+          <span id="previewZoomLevel" class="text-[11px] text-neutral-300 w-11 text-center font-mono">75%</span>
+          <button type="button" id="btnPreviewZoomIn" class="term-btn text-xs py-0.5 px-2 bg-neutral-800 text-white border-neutral-700 hover:bg-white hover:text-black" title="Zoom In (+)">+</button>
+          <button type="button" id="btnPreviewZoomFit" class="term-btn text-xs py-0.5 px-2 bg-neutral-800 text-white border-neutral-700 hover:bg-white hover:text-black hidden sm:inline-block" title="Fit to Screen">FIT</button>
+          
+          <div class="h-4 w-[1px] bg-neutral-700 mx-1"></div>
+          
+          <button type="button" id="btnPreviewRotateCcw" class="term-btn text-xs py-0.5 px-2 bg-neutral-800 text-white border-neutral-700 hover:bg-white hover:text-black" title="Rotate CCW (↶)"><span class="text-indigo-500">↶</span></button>
+          <button type="button" id="btnPreviewRotateCw" class="term-btn text-xs py-0.5 px-2 bg-neutral-800 text-white border-neutral-700 hover:bg-white hover:text-black" title="Rotate CW (↷)"><span class="text-indigo-500">↷</span></button>
+          
+          <div class="h-4 w-[1px] bg-neutral-700 mx-1"></div>
+          
+          <button type="button" id="btnClosePagePreview" class="term-btn text-xs py-0.5 px-2 sm:px-2.5 bg-neutral-800 text-white border-neutral-700 hover:bg-white hover:text-black" title="Close (ESC)">✕<span class="hidden sm:inline"> CLOSE</span></button>
+        </div>
+      </div>
+
+      <!-- Canvas Viewport with Scroll / Zoom -->
+      <div id="previewCanvasContainer" class="flex-1 overflow-auto bg-neutral-200 p-4 flex items-center justify-center relative select-none">
+        <canvas id="previewFullCanvas" class="bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] border border-black max-w-none transition-transform"></canvas>
+        <div id="previewLoadingSpinner" class="hidden absolute inset-0 bg-white/80 flex items-center justify-center font-mono text-xs font-bold gap-2">
+          <span class="status-pulse"></span>
+          <span>LOADING HIGH-RES PREVIEW...</span>
+        </div>
+      </div>
+
+      <!-- Modal Footer Toolbar: Prev / Next Navigation -->
+      <div class="bg-neutral-50 border-t border-black px-4 py-2 flex items-center justify-between text-xs font-mono">
+        <button type="button" id="btnPreviewPrevPage" class="term-btn py-1 px-3 flex items-center gap-1.5" title="Previous Page (Left Arrow)">
+          <span>←</span>
+          <span>PREVIOUS</span>
+        </button>
+
+        <div class="flex items-center gap-2 flex-wrap">
+          <span id="previewPageIndicator" class="font-bold">PAGE 1 OF 1</span>
+          <span class="text-neutral-400 hidden sm:inline">|</span>
+          <span class="text-neutral-500 hidden sm:inline text-[11px]">[USE ← / → KEYS TO NAVIGATE]</span>
+        </div>
+
+        <button type="button" id="btnPreviewNextPage" class="term-btn py-1 px-3 flex items-center gap-1.5" title="Next Page (Right Arrow)">
+          <span>NEXT</span>
+          <span>→</span>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- RESULT MODAL -->
+  <div id="resultModal" class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-3 sm:p-4 hidden">
+    <div class="bg-white border-2 border-black max-w-xl w-full p-3.5 sm:p-6 space-y-3 sm:space-y-4 shadow-none max-h-[92vh] overflow-y-auto select-none">
+      <div class="flex items-center justify-between border-b border-black pb-3">
+        <div class="flex items-center gap-2 flex-wrap">
+          <span class="status-pulse"></span>
+          <span class="text-xs font-bold uppercase tracking-wider text-slate-800">Processing Complete</span>
+        </div>
+        <button type="button" id="btnCloseResult" class="text-slate-400 hover:text-slate-800 text-sm font-semibold p-1 hover:bg-slate-100 rounded-lg transition-colors" aria-label="Close">✕</button>
+      </div>
+
+      <!-- GENERATED OUTPUT WITH INLINE RENAME OPTION -->
+      <div class="space-y-2 border border-black p-3.5 bg-neutral-50 font-mono">
+        <div class="flex items-center justify-between text-[10px] font-bold uppercase text-neutral-600">
+          <label for="resultFilenameInput" class="flex items-center gap-1.5 text-black">
+            <span class="w-4 h-4 rounded-xs bg-amber-100 text-amber-800 flex items-center justify-center text-[10px] flex-shrink-0">✏️</span>
+            <span>FILE NAME:</span>
+          </label>
+          
+        </div>
+        <div class="flex items-stretch border border-black bg-white focus-within:bg-yellow-50/50">
+          <input type="text" id="resultFilenameInput" class="w-full text-xs sm:text-sm font-bold p-2 bg-transparent border-none outline-none font-mono focus:outline-none" placeholder="Enter file name..." />
+          <span id="resultFileExtSuffix" class="text-xs sm:text-sm font-mono font-bold text-neutral-500 bg-neutral-100 px-3 py-2 border-l border-black select-none flex-shrink-0 flex items-center justify-center">.pdf</span>
+        </div>
+        <div id="resultTitle" class="hidden">output.pdf</div>
+        <div id="resultMeta" class="text-xs text-neutral-700 font-mono">Ready for download</div>
+      </div>
+
+                  <!-- DUAL ACTION CARDS: OPTION 1 (DOWNLOAD) & OPTION 2 (DO MORE) -->
+      <div id="resultPrimaryActions" class="grid grid-cols-1 sm:grid-cols-2 gap-3.5 pt-1 w-full">
+        <!-- OPTION 1: DOWNLOAD -->
+        <div id="resultDownloadCard" class="border border-slate-200 p-4 bg-white rounded-xl shadow-xs hover:shadow-md hover:border-slate-300 transition-all flex flex-col justify-between gap-3">
+          <div>
+            <div class="text-[11px] font-semibold text-slate-500 uppercase tracking-wide">Save File</div>
+            <div class="text-xs text-slate-800 font-medium mt-0.5">Download directly to device</div>
+          </div>
+          <button type="button" id="btnDownloadResult" class="term-btn term-btn-primary w-full py-2.5 px-3 text-xs font-bold rounded-lg tracking-wider flex items-center justify-center gap-2">
+            <span class="w-5 h-5 rounded bg-emerald-100 text-emerald-800 flex items-center justify-center text-xs flex-shrink-0">💾</span>
+            <span>Download PDF</span>
+          </button>
+        </div>
+
+        <!-- OPTION 2: DO MORE -->
+        <div id="resultDoMoreCard" class="border border-blue-200 bg-gradient-to-b from-blue-50/80 to-white p-4 rounded-xl shadow-xs hover:shadow-md hover:border-blue-300 transition-all flex flex-col justify-between gap-3">
+          <div>
+            <div class="text-[11px] font-semibold text-blue-700 uppercase tracking-wide flex items-center justify-between">
+              <span>Next Step</span>
+            </div>
+            <div class="text-xs text-slate-700 font-medium mt-0.5">Continue editing in another tool</div>
+          </div>
+          <button type="button" id="btnDoMoreToggle" onclick="event.stopPropagation(); window.toggleDoMorePanel ? window.toggleDoMorePanel() : (function(p){if(!p)return; const isH=p.classList.contains('hidden')||p.style.display==='none'; p.classList.toggle('hidden',!isH); p.style.display=isH?'block':'none';})(document.getElementById('doMorePanel'))" class="term-btn w-full py-2.5 px-3 text-xs font-bold rounded-lg tracking-wider bg-slate-900 hover:bg-slate-800 text-white flex items-center justify-center gap-2">
+            <span class="w-5 h-5 rounded bg-amber-100 text-amber-800 flex items-center justify-center text-xs flex-shrink-0">⚡</span>
+            <span>Do More →</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- EXPANDABLE "DO MORE" TOOL SELECTOR PANEL -->
+      <div id="doMorePanel" class="border border-slate-200 p-4 bg-slate-50/60 rounded-xl space-y-3.5 w-full hidden">
+        <div class="flex items-center justify-between border-b border-slate-200/80 pb-2.5 text-xs font-semibold">
+          <span class="text-blue-700 flex items-center gap-1.5 font-bold">
+            <span>⚡</span>
+            <span>Choose Next Tool (No Re-upload Needed)</span>
+          </span>
+          <button type="button" id="btnCloseDoMorePanel" onclick="event.stopPropagation(); window.toggleDoMorePanel ? window.toggleDoMorePanel(false) : (function(p){if(!p)return; p.classList.add('hidden'); p.style.display='none';})(document.getElementById('doMorePanel'))" class="text-slate-400 hover:text-slate-700 text-[11px] font-bold px-2 py-0.5 rounded hover:bg-slate-200/60 transition-colors">
+            Hide
+          </button>
+        </div>
+
+        <!-- Tool Grid -->
+        <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5 text-xs">
+          <button type="button" class="btn-do-more-action p-2.5 rounded-xl border border-slate-200 bg-white hover:border-slate-400 hover:shadow-sm flex items-center gap-2.5 text-left transition-all group" data-tool="page-numbers" onclick="event.stopPropagation(); window.doMoreWithResult ? window.doMoreWithResult('page-numbers') : (window.PdfApp ? window.PdfApp.doMoreWithResult('page-numbers') : null)">
+            <span class="w-7 h-7 rounded bg-indigo-100 text-indigo-700 flex items-center justify-center text-sm border border-indigo-200 flex-shrink-0">🔢</span>
+            <div class="overflow-hidden">
+              <div class="font-bold text-slate-900 group-hover:text-blue-600 transition-colors">Page Numbers</div>
+              <div class="text-[10px] text-slate-500 truncate">Headers & footers</div>
+            </div>
+          </button>
+
+          <button type="button" class="btn-do-more-action p-2.5 rounded-xl border border-slate-200 bg-white hover:border-slate-400 hover:shadow-sm flex items-center gap-2.5 text-left transition-all group" data-tool="watermark" onclick="event.stopPropagation(); window.doMoreWithResult ? window.doMoreWithResult('watermark') : (window.PdfApp ? window.PdfApp.doMoreWithResult('watermark') : null)">
+            <span class="w-7 h-7 rounded bg-teal-100 text-teal-700 flex items-center justify-center text-sm border border-teal-200 flex-shrink-0">💧</span>
+            <div class="overflow-hidden">
+              <div class="font-bold text-slate-900 group-hover:text-blue-600 transition-colors">Watermark</div>
+              <div class="text-[10px] text-slate-500 truncate">Text or logo stamp</div>
+            </div>
+          </button>
+
+          <button type="button" class="btn-do-more-action p-2.5 rounded-xl border border-slate-200 bg-white hover:border-slate-400 hover:shadow-sm flex items-center gap-2.5 text-left transition-all group" data-tool="redact" onclick="event.stopPropagation(); window.doMoreWithResult ? window.doMoreWithResult('redact') : (window.PdfApp ? window.PdfApp.doMoreWithResult('redact') : null)">
+            <span class="w-7 h-7 rounded bg-pink-100 text-pink-700 flex items-center justify-center text-sm border border-pink-200 flex-shrink-0">⬛</span>
+            <div class="overflow-hidden">
+              <div class="font-bold text-slate-900 group-hover:text-blue-600 transition-colors">Hide Content</div>
+              <div class="text-[10px] text-slate-500 truncate">Blackout / redact</div>
+            </div>
+          </button>
+
+          <button type="button" class="btn-do-more-action p-2.5 rounded-xl border border-slate-200 bg-white hover:border-slate-400 hover:shadow-sm flex items-center gap-2.5 text-left transition-all group" data-tool="split" onclick="event.stopPropagation(); window.doMoreWithResult ? window.doMoreWithResult('split') : (window.PdfApp ? window.PdfApp.doMoreWithResult('split') : null)">
+            <span class="w-7 h-7 rounded bg-rose-100 text-rose-700 flex items-center justify-center text-sm border border-rose-200 flex-shrink-0">✂️</span>
+            <div class="overflow-hidden">
+              <div class="font-bold text-slate-900 group-hover:text-blue-600 transition-colors">Split PDF</div>
+              <div class="text-[10px] text-slate-500 truncate">Visual scissor cuts</div>
+            </div>
+          </button>
+
+          <button type="button" class="btn-do-more-action p-2.5 rounded-xl border border-slate-200 bg-white hover:border-slate-400 hover:shadow-sm flex items-center gap-2.5 text-left transition-all group" data-tool="resize" onclick="event.stopPropagation(); window.doMoreWithResult ? window.doMoreWithResult('resize') : (window.PdfApp ? window.PdfApp.doMoreWithResult('resize') : null)">
+            <span class="w-7 h-7 rounded bg-amber-100 text-amber-800 flex items-center justify-center text-sm border border-amber-200 flex-shrink-0">📐</span>
+            <div class="overflow-hidden">
+              <div class="font-bold text-slate-900 group-hover:text-blue-600 transition-colors">Resize PDF</div>
+              <div class="text-[10px] text-slate-500 truncate">A4, Letter, scale</div>
+            </div>
+          </button>
+
+          <button type="button" class="btn-do-more-action p-2.5 rounded-xl border border-slate-200 bg-white hover:border-slate-400 hover:shadow-sm flex items-center gap-2.5 text-left transition-all group" data-tool="rotate" onclick="event.stopPropagation(); window.doMoreWithResult ? window.doMoreWithResult('rotate') : (window.PdfApp ? window.PdfApp.doMoreWithResult('rotate') : null)">
+            <span class="w-7 h-7 rounded bg-purple-100 text-purple-700 flex items-center justify-center text-sm border border-purple-200 flex-shrink-0">🔄</span>
+            <div class="overflow-hidden">
+              <div class="font-bold text-slate-900 group-hover:text-blue-600 transition-colors">Rotate PDF</div>
+              <div class="text-[10px] text-slate-500 truncate">90°, 180°, 270°</div>
+            </div>
+          </button>
+
+          <button type="button" class="btn-do-more-action p-2.5 rounded-xl border border-slate-200 bg-white hover:border-slate-400 hover:shadow-sm flex items-center gap-2.5 text-left transition-all group" data-tool="add" onclick="event.stopPropagation(); window.doMoreWithResult ? window.doMoreWithResult('add') : (window.PdfApp ? window.PdfApp.doMoreWithResult('add') : null)">
+            <span class="w-7 h-7 rounded bg-emerald-100 text-emerald-700 flex items-center justify-center text-sm border border-emerald-200 flex-shrink-0">➕</span>
+            <div class="overflow-hidden">
+              <div class="font-bold text-slate-900 group-hover:text-blue-600 transition-colors">Add Pages</div>
+              <div class="text-[10px] text-slate-500 truncate">Blank or insert PDF</div>
+            </div>
+          </button>
+
+          <button type="button" class="btn-do-more-action p-2.5 rounded-xl border border-slate-200 bg-white hover:border-slate-400 hover:shadow-sm flex items-center gap-2.5 text-left transition-all group" data-tool="remove" onclick="event.stopPropagation(); window.doMoreWithResult ? window.doMoreWithResult('remove') : (window.PdfApp ? window.PdfApp.doMoreWithResult('remove') : null)">
+            <span class="w-7 h-7 rounded bg-rose-100 text-rose-700 flex items-center justify-center text-sm border border-rose-200 flex-shrink-0">🗑️</span>
+            <div class="overflow-hidden">
+              <div class="font-bold text-slate-900 group-hover:text-blue-600 transition-colors">Remove Pages</div>
+              <div class="text-[10px] text-slate-500 truncate">Delete pages visually</div>
+            </div>
+          </button>
+
+          <button type="button" class="btn-do-more-action p-2.5 rounded-xl border border-slate-200 bg-white hover:border-slate-400 hover:shadow-sm flex items-center gap-2.5 text-left transition-all group" data-tool="n-up" onclick="event.stopPropagation(); window.doMoreWithResult ? window.doMoreWithResult('n-up') : (window.PdfApp ? window.PdfApp.doMoreWithResult('n-up') : null)">
+            <span class="w-7 h-7 rounded bg-lime-100 text-lime-800 flex items-center justify-center text-sm border border-lime-200 flex-shrink-0">📑</span>
+            <div class="overflow-hidden">
+              <div class="font-bold text-slate-900 group-hover:text-blue-600 transition-colors">N-Up Layout</div>
+              <div class="text-[10px] text-slate-500 truncate">Multi-page per sheet</div>
+            </div>
+          </button>
+
+          <button type="button" class="btn-do-more-action p-2.5 rounded-xl border border-slate-200 bg-white hover:border-slate-400 hover:shadow-sm flex items-center gap-2.5 text-left transition-all group" data-tool="pdf2img" onclick="event.stopPropagation(); window.doMoreWithResult ? window.doMoreWithResult('pdf2img') : (window.PdfApp ? window.PdfApp.doMoreWithResult('pdf2img') : null)">
+            <span class="w-7 h-7 rounded bg-orange-100 text-orange-700 flex items-center justify-center text-sm border border-orange-200 flex-shrink-0">🖼️</span>
+            <div class="overflow-hidden">
+              <div class="font-bold text-slate-900 group-hover:text-blue-600 transition-colors">PDF to Image</div>
+              <div class="text-[10px] text-slate-500 truncate">Export JPG / PNG</div>
+            </div>
+          </button>
+
+          <button type="button" class="btn-do-more-action p-2.5 rounded-xl border border-slate-200 bg-white hover:border-slate-400 hover:shadow-sm flex items-center gap-2.5 text-left transition-all group" data-tool="merge" onclick="event.stopPropagation(); window.doMoreWithResult ? window.doMoreWithResult('merge') : (window.PdfApp ? window.PdfApp.doMoreWithResult('merge') : null)">
+            <span class="w-7 h-7 rounded bg-blue-100 text-blue-700 flex items-center justify-center text-sm border border-blue-200 flex-shrink-0">🔀</span>
+            <div class="overflow-hidden">
+              <div class="font-bold text-slate-900 group-hover:text-blue-600 transition-colors">Merge PDF</div>
+              <div class="text-[10px] text-slate-500 truncate">Combine with more</div>
+            </div>
+          </button>
+        </div>
+      </div>
+
+      <!-- Secondary Actions: Preview, Print, New Task -->
+      <div class="flex flex-wrap items-center justify-between gap-2 border-t border-black/20 pt-2 font-mono text-xs w-full">
+        <div class="flex items-center gap-2 flex-wrap">
+          <button type="button" id="btnPreviewResult" class="term-btn py-2 px-3 text-xs font-semibold flex items-center gap-1.5" title="Preview Document Before Downloading">
+            <span class="text-sky-500">👁</span>
+            <span>Preview Document</span>
+          </button>
+          <button type="button" id="btnPrintResult" class="term-btn py-2 px-3 text-xs font-semibold">
+            <span class="text-purple-500">🖨</span>
+            <span>Print PDF</span>
+          </button>
+        </div>
+        <button type="button" id="btnStartNew" class="term-btn text-xs py-2 px-3 font-semibold text-slate-600 hover:text-slate-900">
+          New Task
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="border-t border-black bg-white mt-auto">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-center gap-4 text-xs">
+      <div class="flex items-center gap-2.5">
+        <div class="w-5 h-5 bg-black rounded flex items-center justify-center p-0.5 flex-shrink-0">
+          <img src="./assets/logo.svg" alt="Anixss-PDFer" class="w-full h-full object-contain" />
+        </div>
+        <span class="font-bold text-black font-mono">Anixss-PDFer</span>
+        <span>•</span>
+        <span class="text-neutral-600 font-mono text-[11px]">Browser-Based PDF Toolkit</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/file-transfer.js?v=10"></script>
+  <script src="js/pdf-preview.js?v=10"></script>
+  <script src="js/pdf-tools.js?v=10"></script>
+  <script src="js/converters.js?v=10"></script>
+  <script src="js/app.js?v=10"></script>
+</body>
+</html>

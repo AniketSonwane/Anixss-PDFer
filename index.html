@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Anixss-PDFer — Free Browser-Based PDF Toolkit</title>
+  <link rel="icon" type="image/svg+xml" href="./assets/favicon.svg">
+  <meta name="description" content="Fast, lightweight, completely client-side PDF utility toolkit. Merge, remove pages, add pages, resize, rotate, and convert PDF files directly in your browser. Zero uploads. Complete privacy.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            mono: ['"JetBrains Mono"', '"IBM Plex Mono"', 'Menlo', 'Consolas', 'monospace'],
+            sans: ['"JetBrains Mono"', '"IBM Plex Mono"', 'Menlo', 'Consolas', 'monospace']
+          },
+          colors: {
+            term: {
+              black: '#000000',
+              white: '#ffffff',
+              gray: '#f5f5f5',
+              border: '#000000'
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Custom Terminal Stylesheet -->
+  <link rel="stylesheet" href="src/output.css?v=10">
+
+  <!-- Core PDF Libraries -->
+  <script src="./assets/vendor/pdf-lib.min.js"></script>
+  <script>
+    if (!window.PDFLib) {
+      document.write('<script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"><\/script>');
+    }
+  </script>
+
+  <script src="./assets/vendor/pdf.min.js"></script>
+  <script>
+    if (!window.pdfjsLib) {
+      document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"><\/script>');
+    }
+  </script>
+
+  <script src="./assets/vendor/jszip.min.js"></script>
+  <script>
+    if (!window.JSZip) {
+      document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"><\/script>');
+    }
+  </script>
+</head>
+<body class="bg-white text-black font-mono flex flex-col min-h-screen antialiased selection:bg-black selection:text-white" data-page="home">
+
+  <!-- ========================================================= -->
+  <!-- HEADER                                                    -->
+  <!-- ========================================================= -->
+  <header class="border-b border-black sticky top-0 bg-white z-40">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex flex-wrap items-center justify-between gap-4">
+      
+            <!-- Brand Logo -->
+      <div class="flex items-center gap-3">
+        <a href="index.html" id="navBrand" class="flex items-center gap-2.5 group select-none text-black hover:opacity-90 transition-opacity" title="Anixss-PDFer Home">
+          <div class="w-8 h-8 sm:w-9 sm:h-9 bg-black rounded flex items-center justify-center p-1 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] group-hover:translate-x-0.5 group-hover:translate-y-0.5 group-hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] transition-all">
+            <img src="./assets/logo.svg" alt="Anixss-PDFer" class="w-full h-full object-contain" />
+          </div>
+          <div class="flex items-center gap-1.5">
+            <span class="text-lg sm:text-xl font-extrabold tracking-tight text-black font-mono">Anixss<span class="text-neutral-400 font-normal">-</span>PDFer</span>
+            <span class="text-[10px] font-mono border border-black px-1.5 py-0.5 bg-black text-white font-bold tracking-wider">v1.0</span>
+          </div>
+        </a>
+      </div>
+
+      <!-- Navigation Links -->
+      <nav class="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm font-bold">
+        <a href="index.html" id="navHome" class="px-2.5 py-1 border border-black bg-black text-white transition-none">HOME</a>
+        <a href="about.html" id="navAbout" class="px-2.5 py-1 border border-transparent hover:border-black hover:bg-black hover:text-white transition-none">ABOUT</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- ========================================================= -->
+  <!-- MAIN CONTENT CONTAINER                                    -->
+  <!-- ========================================================= -->
+  <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 py-6 sm:py-8 space-y-10">
+
+    <!-- ======================================================= -->
+    <!-- VIEW: HOMEPAGE                                          -->
+    <!-- ======================================================= -->
+    <section id="homeSection" class="space-y-8">
+      
+      <!-- Hero Header -->
+      <div class="border-b border-black pb-6 space-y-4">
+        <div class="flex items-center gap-3.5">
+          <div class="w-11 h-11 sm:w-14 sm:h-14 bg-black rounded-sm flex items-center justify-center p-1.5 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] flex-shrink-0">
+            <img src="./assets/logo.svg" alt="Anixss-PDFer Brand" class="w-full h-full object-contain" />
+          </div>
+          <div>
+            <div class="flex items-center gap-2 text-[11px] sm:text-xs text-neutral-600 font-bold uppercase tracking-wider font-mono">
+              <span class="text-black font-extrabold">ANIXSS-PDFER</span>
+              <span>•</span>
+              <span>CLIENT-SIDE ENGINE</span>
+              <span>•</span>
+              <span class="text-emerald-700 bg-emerald-50 border border-emerald-300 px-1.5 py-0.2 rounded-xs">100% PRIVATE</span>
+            </div>
+            <h1 class="text-2xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-black mt-1">
+              PDF TOOLS. ZERO UPLOADS.
+            </h1>
+          </div>
+        </div>
+        <p class="text-sm sm:text-base text-neutral-700 max-w-2xl font-medium">
+          Merge, split, edit, redact, and convert PDF files directly in your browser. Fast, free, and private by design.
+        </p>
+      </div>
+
+      <!-- Prominent Global Drag-and-Drop Area -->
+      <div id="globalDropzone" class="term-dropzone p-8 sm:p-12 text-center flex flex-col items-center justify-center gap-4 cursor-pointer">
+        <div class="border border-black p-3 bg-sky-50 text-sky-600">
+          <svg class="w-8 h-8 stroke-current" fill="none" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+          </svg>
+        </div>
+        <div class="space-y-1">
+          <div class="text-base sm:text-lg font-bold tracking-wider">DROP YOUR FILES HERE</div>
+          <div class="text-xs text-neutral-600">ACCEPTS PDF DOCUMENTS, JPG, PNG, WEBP (UP TO 100MB)</div>
+        </div>
+        <div>
+          <button type="button" id="btnGlobalSelect" class="term-btn term-btn-primary px-6 py-2.5 text-xs sm:text-sm">
+            SELECT FILES
+          </button>
+          <input type="file" id="globalFileInput" multiple accept=".pdf,image/jpeg,image/png,image/webp" class="hidden" />
+        </div>
+        <div class="border-t border-black pt-3 mt-2 text-xs font-bold tracking-widest text-black">
+          YOUR FILES STAY ON YOUR DEVICE. ZERO NETWORK TRANSMISSION.
+        </div>
+      </div>
+
+      <!-- Available Tools Header -->
+      <div id="tools" class="flex items-center justify-between border-b border-black pb-2 pt-4">
+        <div class="text-sm font-bold tracking-wider">ALL PDF TOOLS (12)</div>
+        <div class="text-xs text-neutral-600">Select a tool to begin</div>
+      </div>
+
+      <!-- Responsive Grid of Monochrome Cards Linking to Separate Pages -->
+      <div id="toolGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        
+        <!-- Card 1: Merge PDF -->
+        <a href="merge.html" class="term-card term-card-interactive tool-grid-card p-5 space-y-3 flex flex-col justify-between block no-underline text-inherit group" data-tool="merge" tabindex="0">
+          <div class="space-y-2">
+            <div class="flex items-center justify-between text-xs">
+              <span class="font-bold border border-black px-1.5 py-0.5 group-hover:bg-black group-hover:text-white transition-none">TOOL 01</span>
+              <span class="text-xs font-mono">MULTI-FILE</span>
+            </div>
+            <div class="flex items-center gap-2.5">
+              <span class="w-8 h-8 rounded-sm bg-blue-100 text-blue-700 border-blue-300 flex items-center justify-center border flex-shrink-0">
+                <svg class="w-4 h-4 stroke-current" fill="none" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/></svg>
+              </span>
+              <h2 class="text-lg font-bold">MERGE PDF</h2>
+            </div>
+            <p class="text-xs text-neutral-600 line-clamp-2">
+              Select two or more PDF files, reorder them as desired, preview individual pages, insert blank separator pages, and combine into a single document.
+            </p>
+          </div>
+          <div class="pt-3 border-t border-black flex items-center justify-between text-xs font-bold">
+            <span>OPEN MERGER</span>
+            <svg class="w-4 h-4 stroke-current transform group-hover:translate-x-1 transition-transform" fill="none" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+          </div>
+        </a>
+
+        <!-- Card 2: Remove Pages -->
+        <a href="remove-pages.html" class="term-card term-card-interactive tool-grid-card p-5 space-y-3 flex flex-col justify-between block no-underline text-inherit group" data-tool="remove" tabindex="0">
+          <div class="space-y-2">
+            <div class="flex items-center justify-between text-xs">
+              <span class="font-bold border border-black px-1.5 py-0.5 group-hover:bg-black group-hover:text-white transition-none">TOOL 02</span>
+              <span class="text-xs font-mono">PAGE EDITOR</span>
+            </div>
+            <div class="flex items-center gap-2.5">
+              <span class="w-8 h-8 rounded-sm bg-rose-100 text-rose-700 border-rose-300 flex items-center justify-center border flex-shrink-0">
+                <svg class="w-4 h-4 stroke-current" fill="none" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+              </span>
+              <h2 class="text-lg font-bold">REMOVE PAGES</h2>
+            </div>
+            <p class="text-xs text-neutral-600 line-clamp-2">
+              View page thumbnails, pick individual pages, or enter ranges like 2-4, 7 to delete unwanted pages cleanly.
+            </p>
+          </div>
+          <div class="pt-3 border-t border-black flex items-center justify-between text-xs font-bold">
+            <span>EXTRACT & DELETE</span>
+            <svg class="w-4 h-4 stroke-current transform group-hover:translate-x-1 transition-transform" fill="none" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+          </div>
+        </a>
+
+        <!-- Card 3: Add Pages -->
+        <a href="add-pages.html" class="term-card term-card-interactive tool-grid-card p-5 space-y-3 flex flex-col justify-between block no-underline text-inherit group" data-tool="add" tabindex="0">
+          <div class="space-y-2">
+            <div class="flex items-center justify-between text-xs">
+              <span class="font-bold border border-black px-1.5 py-0.5 group-hover:bg-black group-hover:text-white transition-none">TOOL 03</span>
+              <span class="text-xs font-mono">PAGE INSERTER</span>
+            </div>
+            <div class="flex items-center gap-2.5">
+              <span class="w-8 h-8 rounded-sm bg-emerald-100 text-emerald-700 border-emerald-300 flex items-center justify-center border flex-shrink-0">
+                <svg class="w-4 h-4 stroke-current" fill="none" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+              </span>
+              <h2 class="text-lg font-bold">ADD PAGES</h2>
+            </div>
+            <p class="text-xs text-neutral-600 line-clamp-2">
+              Insert blank pages with custom paper size or inject pages from another PDF at beginning, end, or page X.
+            </p>
+          </div>
+          <div class="pt-3 border-t border-black flex items-center justify-between text-xs font-bold">
+            <span>INSERT PAGES</span>
+            <svg class="w-4 h-4 stroke-current transform group-hover:translate-x-1 transition-transform" fill="none" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+          </div>
+        </a>
+
+        <!-- Card 4: Resize PDF -->
+        <a href="resize.html" class="term-card term-card-interactive tool-grid-card p-5 space-y-3 flex flex-col justify-between block no-underline text-inherit group" data-tool="resize" tabindex="0">
+          <div class="space-y-2">
+            <div class="flex items-center justify-between text-xs">
+              <span class="font-bold border border-black px-1.5 py-0.5 group-hover:bg-black group-hover:text-white transition-none">TOOL 04</span>
+              <span class="text-xs font-mono">STANDARDIZER</span>
+            </div>
+            <div class="flex items-center gap-2.5">
+              <span class="w-8 h-8 rounded-sm bg-amber-100 text-amber-800 border-amber-300 flex items-center justify-center border flex-shrink-0">
+                <svg class="w-4 h-4 stroke-current" fill="none" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"/></svg>
+              </span>
+              <h2 class="text-lg font-bold">RESIZE PDF</h2>
+            </div>
+            <p class="text-xs text-neutral-600 line-clamp-2">
+              Transform pages to A4, A3, A5, Letter, Legal or custom dimensions with proportional scaling and zero cropping.
+            </p>
+          </div>
+          <div class="pt-3 border-t border-black flex items-center justify-between text-xs font-bold">
+            <span>CHANGE DIMENSIONS</span>
+            <svg class="w-4 h-4 stroke-current transform group-hover:translate-x-1 transition-transform" fill="none" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+          </div>
+        </a>
+
+        <!-- Card 5: Rotate PDF -->
+        <a href="rotate.html" class="term-card term-card-interactive tool-grid-card p-5 space-y-3 flex flex-col justify-between block no-underline text-inherit group" data-tool="rotate" tabindex="0">
+          <div class="space-y-2">
+            <div class="flex items-center justify-between text-xs">
+              <span class="font-bold border border-black px-1.5 py-0.5 group-hover:bg-black group-hover:text-white transition-none">TOOL 05</span>
+              <span class="text-xs font-mono">ORIENTATION</span>
+            </div>
+            <div class="flex items-center gap-2.5">
+              <span class="w-8 h-8 rounded-sm bg-purple-100 text-purple-700 border-purple-300 flex items-center justify-center border flex-shrink-0">
+                <svg class="w-4 h-4 stroke-current" fill="none" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+              </span>
+              <h2 class="text-lg font-bold">ROTATE PDF</h2>
+            </div>
+            <p class="text-xs text-neutral-600 line-clamp-2">
+              Rotate all pages or specific pages by 90°, 180°, or 270° with instant visual preview and bulk filters.
+            </p>
+          </div>
+          <div class="pt-3 border-t border-black flex items-center justify-between text-xs font-bold">
+            <span>ROTATE PAGES</span>
+            <svg class="w-4 h-4 stroke-current transform group-hover:translate-x-1 transition-transform" fill="none" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+          </div>
+        </a>
+
+        <!-- Card 6: Image to PDF -->
+        <a href="image-to-pdf.html" class="term-card term-card-interactive tool-grid-card p-5 space-y-3 flex flex-col justify-between block no-underline text-inherit group" data-tool="img2pdf" tabindex="0">
+          <div class="space-y-2">
+            <div class="flex items-center justify-between text-xs">
+              <span class="font-bold border border-black px-1.5 py-0.5 group-hover:bg-black group-hover:text-white transition-none">TOOL 06</span>
+              <span class="text-xs font-mono">COMPILER</span>
+            </div>
+            <div class="flex items-center gap-2.5">
+              <span class="w-8 h-8 rounded-sm bg-sky-100 text-sky-700 border-sky-300 flex items-center justify-center border flex-shrink-0">
+                <svg class="w-4 h-4 stroke-current" fill="none" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+              </span>
+              <h2 class="text-lg font-bold">IMAGE TO PDF</h2>
+            </div>
+            <p class="text-xs text-neutral-600 line-clamp-2">
+              Assemble JPG, PNG, and WebP images into a single document with reordering, margin options, and fit controls.
+            </p>
+          </div>
+          <div class="pt-3 border-t border-black flex items-center justify-between text-xs font-bold">
+            <span>COMPILE IMAGES</span>
+            <svg class="w-4 h-4 stroke-current transform group-hover:translate-x-1 transition-transform" fill="none" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+          </div>
+        </a>
+
+        <!-- Card 7: PDF to Image -->
+        <a href="pdf-to-image.html" class="term-card term-card-interactive tool-grid-card p-5 space-y-3 flex flex-col justify-between block no-underline text-inherit group" data-tool="pdf2img" tabindex="0">
+          <div class="space-y-2">
+            <div class="flex items-center justify-between text-xs">
+              <span class="font-bold border border-black px-1.5 py-0.5 group-hover:bg-black group-hover:text-white transition-none">TOOL 07</span>
+              <span class="text-xs font-mono">RASTERIZER</span>
+            </div>
+            <div class="flex items-center gap-2.5">
+              <span class="w-8 h-8 rounded-sm bg-orange-100 text-orange-700 border-orange-300 flex items-center justify-center border flex-shrink-0">
+                <svg class="w-4 h-4 stroke-current" fill="none" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+              </span>
+              <h2 class="text-lg font-bold">PDF TO IMAGE</h2>
+            </div>
+            <p class="text-xs text-neutral-600 line-clamp-2">
+              Render PDF pages into crisp PNG or JPEG images at up to 216 DPI with single downloads and ZIP archive export.
+            </p>
+          </div>
+          <div class="pt-3 border-t border-black flex items-center justify-between text-xs font-bold">
+            <span>EXPORT AS IMAGES</span>
+            <svg class="w-4 h-4 stroke-current transform group-hover:translate-x-1 transition-transform" fill="none" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+          </div>
+        </a>
+
+        <!-- Card 8: Watermark PDF -->
+        <a href="watermark.html" class="term-card term-card-interactive tool-grid-card p-5 space-y-3 flex flex-col justify-between block no-underline text-inherit group" data-tool="watermark" tabindex="0">
+          <div class="space-y-2">
+            <div class="flex items-center justify-between text-xs">
+              <span class="font-bold border border-black px-1.5 py-0.5 group-hover:bg-black group-hover:text-white transition-none">TOOL 08</span>
+              <span class="text-xs font-mono">BRANDING & SECURITY</span>
+            </div>
+            <div class="flex items-center gap-2.5">
+              <span class="w-8 h-8 rounded-sm bg-teal-100 text-teal-700 border-teal-300 flex items-center justify-center border flex-shrink-0">
+                <svg class="w-4 h-4 stroke-current" fill="none" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7 21a4 4 0 01-4-4 7 7 0 0110-6.24V11a7 7 0 0110 6.24 4 4 0 01-4 4H7z"/></svg>
+              </span>
+              <h2 class="text-lg font-bold">WATERMARK PDF</h2>
+            </div>
+            <p class="text-xs text-neutral-600 line-clamp-2">
+              Add custom text or image watermarks with full control over rotation angle, opacity, repeat tiling, and live preview.
+            </p>
+          </div>
+          <div class="pt-3 border-t border-black flex items-center justify-between text-xs font-bold">
+            <span>ADD WATERMARK</span>
+            <svg class="w-4 h-4 stroke-current transform group-hover:translate-x-1 transition-transform" fill="none" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+          </div>
+        </a>
+
+        <!-- Card 9: Hide Content / Redact -->
+        <a href="redact.html" class="term-card term-card-interactive tool-grid-card p-5 space-y-3 flex flex-col justify-between block no-underline text-inherit group" data-tool="redact" tabindex="0">
+          <div class="space-y-2">
+            <div class="flex items-center justify-between text-xs">
+              <span class="font-bold border border-black px-1.5 py-0.5 group-hover:bg-black group-hover:text-white transition-none">TOOL 09</span>
+              <span class="text-xs font-mono">PRIVACY SANITIZER</span>
+            </div>
+            <div class="flex items-center gap-2.5">
+              <span class="w-8 h-8 rounded-sm bg-pink-100 text-pink-700 border-pink-300 flex items-center justify-center border flex-shrink-0">
+                <svg class="w-4 h-4 stroke-current" fill="none" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l18 18"/></svg>
+              </span>
+              <h2 class="text-lg font-bold">HIDE CONTENT (REDACT)</h2>
+            </div>
+            <p class="text-xs text-neutral-600 line-clamp-2">
+              Draw permanent blackout or whiteout hiding boxes directly over sensitive text, signatures, or confidential figures.
+            </p>
+          </div>
+          <div class="pt-3 border-t border-black flex items-center justify-between text-xs font-bold">
+            <span>DRAW HIDING BOXES</span>
+            <svg class="w-4 h-4 stroke-current transform group-hover:translate-x-1 transition-transform" fill="none" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+          </div>
+        </a>
+
+        <!-- Card 10: Page Numbers -->
+        <a href="page-numbers.html" class="term-card term-card-interactive tool-grid-card p-5 space-y-3 flex flex-col justify-between block no-underline text-inherit group" data-tool="page-numbers" tabindex="0">
+          <div class="space-y-2">
+            <div class="flex items-center justify-between text-xs">
+              <span class="font-bold border border-black px-1.5 py-0.5 group-hover:bg-black group-hover:text-white transition-none">TOOL 10</span>
+              <span class="text-xs font-mono">PAGINATION</span>
+            </div>
+            <div class="flex items-center gap-2.5">
+              <span class="w-8 h-8 rounded-sm bg-indigo-100 text-indigo-700 border-indigo-300 flex items-center justify-center border flex-shrink-0">
+                <span class="font-mono text-xs font-black">#1</span>
+              </span>
+              <h2 class="text-lg font-bold">ADD PAGE NUMBERS</h2>
+            </div>
+            <p class="text-xs text-neutral-600 line-clamp-2">
+              Number document pages with custom templates ("Page {n} of {total}"), position matrix, cover exclusion, and duplex margins.
+            </p>
+          </div>
+          <div class="pt-3 border-t border-black flex items-center justify-between text-xs font-bold">
+            <span>NUMBER PAGES</span>
+            <svg class="w-4 h-4 stroke-current transform group-hover:translate-x-1 transition-transform" fill="none" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+          </div>
+        </a>
+
+        <!-- Card 11: Multiple Pages per Sheet (N-Up) -->
+        <a href="n-up.html" class="term-card term-card-interactive tool-grid-card p-5 space-y-3 flex flex-col justify-between block no-underline text-inherit group" data-tool="n-up" tabindex="0">
+          <div class="space-y-2">
+            <div class="flex items-center justify-between text-xs">
+              <span class="font-bold border border-black px-1.5 py-0.5 group-hover:bg-black group-hover:text-white transition-none">TOOL 11</span>
+              <span class="text-xs font-mono">LAYOUT COMPOSER</span>
+            </div>
+            <div class="flex items-center gap-2.5">
+              <span class="w-8 h-8 rounded-sm bg-lime-100 text-lime-800 border-lime-300 flex items-center justify-center border flex-shrink-0">
+                <svg class="w-4 h-4 stroke-current" fill="none" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
+              </span>
+              <h2 class="text-lg font-bold">MULTI-PAGE PER SHEET (N-UP)</h2>
+            </div>
+            <p class="text-xs text-neutral-600 line-clamp-2">
+              Combine 2, 4, 6, 9, or 16 pages into 1 single page sheet with auto orientation, custom paper sizes, and hairline borders.
+            </p>
+          </div>
+          <div class="pt-3 border-t border-black flex items-center justify-between text-xs font-bold">
+            <span>COMBINE PAGES</span>
+            <svg class="w-4 h-4 stroke-current transform group-hover:translate-x-1 transition-transform" fill="none" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+          </div>
+        </a>
+
+        <!-- Card 12: Split PDF -->
+        <a href="split.html" class="term-card term-card-interactive tool-grid-card p-5 space-y-3 flex flex-col justify-between block no-underline text-inherit group" data-tool="split" tabindex="0">
+          <div class="space-y-2">
+            <div class="flex items-center justify-between text-xs">
+              <span class="font-bold border border-black px-1.5 py-0.5 group-hover:bg-black group-hover:text-white transition-none">TOOL 12</span>
+              <span class="text-xs font-mono">PAGE SEPARATOR</span>
+            </div>
+            <div class="flex items-center gap-2.5">
+              <span class="w-8 h-8 rounded-sm bg-rose-100 text-rose-700 border-rose-300 flex items-center justify-center border flex-shrink-0">
+                <svg class="w-4 h-4 stroke-current" fill="none" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14.121 14.121L19 19m-7-7l7-7m-7 7l-2.879 2.879M12 12L9.121 9.121m0 5.758a3 3 0 10-4.243 4.243 3 3 0 004.243-4.243zm0-5.758a3 3 0 10-4.243-4.243 3 3 0 004.243 4.243z"/></svg>
+              </span>
+              <h2 class="text-lg font-bold">SPLIT PDF</h2>
+            </div>
+            <p class="text-xs text-neutral-600 line-clamp-2">
+              Extract all pages to individual files, split by custom page ranges (e.g. 1-3, 4-6), or extract selected pages into PDF or ZIP.
+            </p>
+          </div>
+          <div class="pt-3 border-t border-black flex items-center justify-between text-xs font-bold">
+            <span>SPLIT DOCUMENT</span>
+            <svg class="w-4 h-4 stroke-current transform group-hover:translate-x-1 transition-transform" fill="none" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+          </div>
+        </a>
+
+      </div>
+
+
+    </section>
+
+  </main>
+
+  <!-- ========================================================= -->
+  <!-- MODAL: QUICK SINGLE PDF ACTION CHOOSER                   -->
+  <!-- ========================================================= -->
+  <div id="quickToolModal" class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white border-2 border-black max-w-md w-full p-6 space-y-4 shadow-none">
+      
+      <div class="flex items-center justify-between border-b border-black pb-2">
+        <span class="text-sm font-bold tracking-wider">SELECT TOOL</span>
+        <button type="button" id="btnCloseQuickModal" class="text-xs font-bold hover:underline">[✕]</button>
+      </div>
+
+      <div class="border border-black p-3 bg-neutral-50 text-xs font-mono">
+        <span class="text-neutral-500">FILE: </span><span id="quickFilename" class="font-bold">document.pdf</span>
+      </div>
+
+      <p class="text-xs text-neutral-700">
+        Which operation would you like to perform on this document?
+      </p>
+
+      <div class="grid grid-cols-2 gap-2 text-xs">
+        <button type="button" class="term-btn py-2 btn-quick-action" data-tool="remove">REMOVE PAGES</button>
+        <button type="button" class="term-btn py-2 btn-quick-action" data-tool="add">ADD PAGES</button>
+        <button type="button" class="term-btn py-2 btn-quick-action" data-tool="resize">RESIZE PDF</button>
+        <button type="button" class="term-btn py-2 btn-quick-action" data-tool="rotate">ROTATE PDF</button>
+        <button type="button" class="term-btn py-2 btn-quick-action" data-tool="watermark">WATERMARK</button>
+        <button type="button" class="term-btn py-2 btn-quick-action" data-tool="redact">HIDE CONTENT</button>
+        <button type="button" class="term-btn py-2 btn-quick-action" data-tool="page-numbers">PAGE NUMBERS</button>
+        <button type="button" class="term-btn py-2 btn-quick-action" data-tool="n-up">MULTI-PAGE (N-UP)</button>
+        <button type="button" class="term-btn py-2 btn-quick-action" data-tool="split">SPLIT PDF</button>
+        <button type="button" class="term-btn py-2 btn-quick-action" data-tool="pdf2img">PDF TO IMAGE</button>
+        <button type="button" class="term-btn py-2 btn-quick-action" data-tool="merge">MERGE (ADD MORE)</button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ========================================================= -->
+  <!-- FOOTER                                                    -->
+  <!-- ========================================================= -->
+  <footer class="border-t border-black bg-white mt-auto">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex flex-col sm:flex-row items-center justify-center gap-3 text-xs">
+      <div class="flex items-center gap-2.5">
+        <div class="w-5 h-5 bg-black rounded flex items-center justify-center p-0.5 flex-shrink-0">
+          <img src="./assets/logo.svg" alt="Anixss-PDFer" class="w-full h-full object-contain" />
+        </div>
+        <span class="font-bold text-black font-mono">Anixss-PDFer</span>
+        <span>•</span>
+        <span class="text-neutral-600 font-mono text-[11px]">Browser-Based PDF Toolkit</span>
+      </div>
+      <span class="hidden sm:inline text-neutral-400">•</span>
+      <div class="flex items-center gap-3 text-neutral-600">
+        <a href="about.html" class="underline hover:text-black font-mono text-[11px]">PRIVACY & ARCHITECTURE</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Application Modules -->
+  <script src="js/file-transfer.js?v=10"></script>
+  <script src="js/pdf-preview.js?v=10"></script>
+  <script src="js/pdf-tools.js?v=10"></script>
+  <script src="js/converters.js?v=10"></script>
+  <script src="js/app.js?v=10"></script>
+
+</body>
+</html>

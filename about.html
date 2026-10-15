@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>About & Privacy — Anixss-PDFer</title>
+  <link rel="icon" type="image/svg+xml" href="./assets/favicon.svg">
+  <meta name="description" content="Technical overview, privacy guarantees, and architectural details of Anixss-PDFer. 100% client-side browser processing.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            mono: ['"JetBrains Mono"', '"IBM Plex Mono"', 'Menlo', 'Consolas', 'monospace']
+          }
+        }
+      }
+    }
+  </script>
+
+  <link rel="stylesheet" href="src/output.css?v=10">
+</head>
+<body class="bg-white text-black font-mono flex flex-col min-h-screen antialiased selection:bg-black selection:text-white">
+
+  <!-- HEADER -->
+  <header class="border-b border-black sticky top-0 bg-white z-40">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex flex-wrap items-center justify-between gap-4">
+      <!-- Brand Logo -->
+      <div class="flex items-center gap-3">
+        <a href="index.html" id="navBrand" class="flex items-center gap-2.5 group select-none text-black hover:opacity-90 transition-opacity" title="Anixss-PDFer Home">
+          <div class="w-8 h-8 sm:w-9 sm:h-9 bg-black rounded flex items-center justify-center p-1 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] group-hover:translate-x-0.5 group-hover:translate-y-0.5 group-hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] transition-all">
+            <img src="./assets/logo.svg" alt="Anixss-PDFer" class="w-full h-full object-contain" />
+          </div>
+          <div class="flex items-center gap-1.5">
+            <span class="text-lg sm:text-xl font-extrabold tracking-tight text-black font-mono">Anixss<span class="text-neutral-400 font-normal">-</span>PDFer</span>
+            <span class="text-[10px] font-mono border border-black px-1.5 py-0.5 bg-black text-white font-bold tracking-wider">v1.0</span>
+          </div>
+        </a>
+      </div>
+
+      <nav class="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm font-bold">
+        <a href="index.html" class="px-2.5 py-1 border border-transparent hover:border-black hover:bg-black hover:text-white transition-none">HOME</a>
+        <a href="about.html" class="px-2.5 py-1 border border-black bg-black text-white transition-none">ABOUT</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- MAIN ABOUT CONTENT -->
+  <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 py-6 sm:py-8 space-y-8">
+    
+    <div class="border-b border-black pb-4 space-y-2">
+      <div class="text-xs font-bold text-neutral-600">ABOUT & TECHNICAL SPECIFICATIONS</div>
+      <h1 class="text-2xl sm:text-4xl font-extrabold tracking-tight">SECURITY & ARCHITECTURE</h1>
+      <p class="text-sm text-neutral-700">
+        Anixss-PDFer is engineered specifically for security-conscious developers, professionals, and users who require complete document confidentiality.
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs sm:text-sm leading-relaxed">
+      
+      <div class="border border-black p-5 space-y-3 bg-white">
+        <h2 class="text-base font-bold flex items-center gap-2">
+          <span>100% Client-Side Processing</span>
+        </h2>
+        <p>
+          Anixss-PDFer operates entirely within your browser's sandboxed JavaScript and WebAssembly runtime.
+          Documents you select are loaded directly into client RAM using standard web APIs (FileReader and ArrayBuffer).
+        </p>
+        <p>
+          <strong>Zero bytes of document content are transmitted across the network.</strong> No backend servers, cloud databases, serverless functions, or analytics scripts exist in this codebase.
+        </p>
+      </div>
+
+      <div class="border border-black p-5 space-y-3 bg-white">
+        <h2 class="text-base font-bold flex items-center gap-2">
+          <span>Technology Stack</span>
+        </h2>
+        <ul class="space-y-1.5 list-disc list-inside">
+          <li><strong>pdf-lib:</strong> Binary PDF parsing, merging, page extraction, geometry transformations, and lossless compilation.</li>
+          <li><strong>PDF.js:</strong> Mozilla's browser rendering engine for vector-accurate canvas thumbnails and high-DPI rasterization.</li>
+          <li><strong>JSZip:</strong> Pure JavaScript client-side compression for multi-image exports.</li>
+          <li><strong>Tailwind CSS:</strong> High-contrast, monochromatic developer utility styling.</li>
+        </ul>
+      </div>
+
+      <div class="border border-black p-5 space-y-3 bg-white">
+        <h2 class="text-base font-bold flex items-center gap-2">
+          <span>How to Verify Privacy</span>
+        </h2>
+        <p>
+          You can verify our privacy claims at any time:
+        </p>
+        <ol class="space-y-1.5 list-decimal list-inside text-neutral-800">
+          <li>Open your browser Developer Tools (<kbd class="border border-black px-1">F12</kbd> or <kbd class="border border-black px-1">Ctrl+Shift+I</kbd>).</li>
+          <li>Switch to the <strong>Network</strong> tab.</li>
+          <li>Perform any operation (Merge, Rotate, Remove, or Convert).</li>
+          <li>Observe that zero POST requests or file upload payloads are dispatched.</li>
+        </ol>
+      </div>
+
+      <div class="border border-black p-5 space-y-3 bg-white">
+        <h2 class="text-base font-bold flex items-center gap-2">
+          <span>Performance & Memory</span>
+        </h2>
+        <p>
+          Because processing relies on device memory, file size limits are governed only by available system RAM.
+          Temporary Blob URLs generated during processing are automatically cleaned up to prevent memory leaks.
+        </p>
+        <p>
+          Works offline once downloaded or served on your local network.
+        </p>
+      </div>
+
+    </div>
+
+    <!-- Quick Tool Navigation -->
+    <div class="border-t border-black pt-6 space-y-3">
+      <div class="text-xs font-bold tracking-wider">QUICK TOOLS:</div>
+      <div class="flex flex-wrap gap-2 text-xs">
+        <a href="merge.html" class="term-btn">MERGE PDF</a>
+        <a href="remove-pages.html" class="term-btn">REMOVE PAGES</a>
+        <a href="add-pages.html" class="term-btn">ADD PAGES</a>
+        <a href="resize.html" class="term-btn">RESIZE PDF</a>
+        <a href="rotate.html" class="term-btn">ROTATE PDF</a>
+        <a href="image-to-pdf.html" class="term-btn">IMAGE TO PDF</a>
+        <a href="pdf-to-image.html" class="term-btn">PDF TO IMAGE</a>
+        <a href="watermark.html" class="term-btn">WATERMARK PDF</a>
+        <a href="redact.html" class="term-btn">HIDE CONTENT</a>
+        <a href="page-numbers.html" class="term-btn">PAGE NUMBERS</a>
+        <a href="n-up.html" class="term-btn">N-UP MULTI-PAGE</a>
+        <a href="split.html" class="term-btn">SPLIT PDF</a>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="border-t border-black bg-white mt-auto">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex flex-col sm:flex-row items-center justify-center gap-3 text-xs">
+      <div class="flex items-center gap-2.5">
+        <div class="w-5 h-5 bg-black rounded flex items-center justify-center p-0.5 flex-shrink-0">
+          <img src="./assets/logo.svg" alt="Anixss-PDFer" class="w-full h-full object-contain" />
+        </div>
+        <span class="font-bold text-black font-mono">Anixss-PDFer</span>
+        <span>•</span>
+        <span class="text-neutral-600 font-mono text-[11px]">Browser-Based PDF Toolkit</span>
+      </div>
+      <span class="hidden sm:inline text-neutral-400">•</span>
+      <div class="flex items-center gap-3 text-neutral-600">
+        <a href="index.html" class="underline hover:text-black font-mono text-[11px]">HOME</a>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>
