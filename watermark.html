@@ -3,9 +3,47 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Watermark PDF — Anixss-PDFer</title>
-  <link rel="icon" type="image/svg+xml" href="./assets/favicon.svg">
-  <meta name="description" content="Add text or image watermarks to PDF files with custom angle, opacity, tiling, and live visual preview. 100% client-side in your browser.">
+  <title>Watermark PDF Online Free — Custom Text & Image Stamp | Anixss-PDFer</title>
+  <meta name="description" content="Add custom text or image stamp watermarks to PDF pages. Real-time visual canvas preview, rotation angles, opacity, and positioning matrix.">
+  <meta name="keywords" content="watermark pdf, stamp pdf, add text watermark to pdf, add image watermark to pdf, protect pdf">
+  <meta name="author" content="Anixss-PDFer">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://anixss-pdfer.com/watermark.html">
+  <link rel="icon" type="image/svg+xml" href="./assets/favicon.svg?v=3">
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://anixss-pdfer.com/watermark.html">
+  <meta property="og:title" content="Watermark PDF Online Free — Custom Text & Image Stamp | Anixss-PDFer">
+  <meta property="og:description" content="Add custom text or image stamp watermarks to PDF pages. Real-time visual canvas preview, rotation angles, opacity, and positioning matrix.">
+  <meta property="og:image" content="https://anixss-pdfer.com/assets/logo.svg">
+  <meta property="og:site_name" content="Anixss-PDFer">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:url" content="https://anixss-pdfer.com/watermark.html">
+  <meta name="twitter:title" content="Watermark PDF Online Free — Custom Text & Image Stamp | Anixss-PDFer">
+  <meta name="twitter:description" content="Add custom text or image stamp watermarks to PDF pages. Real-time visual canvas preview, rotation angles, opacity, and positioning matrix.">
+  <meta name="twitter:image" content="https://anixss-pdfer.com/assets/logo.svg">
+
+  <!-- JSON-LD Structured Data Schema -->
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Watermark PDF Online Free",
+  "url": "https://anixss-pdfer.com/watermark.html",
+  "description": "Add custom text or image stamp watermarks to PDF pages. Real-time visual canvas preview, rotation angles, opacity, and positioning matrix.",
+  "applicationCategory": "UtilitiesApplication",
+  "operatingSystem": "Any",
+  "browserRequirements": "Requires JavaScript. Requires HTML5.",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  }
+}
+  </script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -24,7 +62,7 @@
     }
   </script>
 
-  <link rel="stylesheet" href="src/output.css?v=10">
+  <link rel="stylesheet" href="src/output.css?v=12">
 
   <script src="./assets/vendor/pdf-lib.min.js"></script>
   <script>
@@ -52,7 +90,7 @@
           </div>
           <div class="flex items-center gap-1.5">
             <span class="text-lg sm:text-xl font-extrabold tracking-tight text-black font-mono">Anixss<span class="text-neutral-400 font-normal">-</span>PDFer</span>
-            <span class="text-[10px] font-mono border border-black px-1.5 py-0.5 bg-black text-white font-bold tracking-wider">v1.0</span>
+            <span class="text-[10px] font-mono border border-black px-1.5 py-0.5 bg-black text-white font-bold tracking-wider">v2.0</span>
           </div>
         </a>
       </div>
@@ -88,10 +126,9 @@
     <div id="panel_watermark" class="space-y-6">
       
       <!-- Dropzone -->
-      <div id="watermarkDropzone" class="term-dropzone p-6 sm:p-8 text-center flex flex-col items-center justify-center gap-3 cursor-pointer">
+      <div id="watermarkDropzone" class="term-dropzone p-6 sm:p-8 text-center flex flex-col items-center justify-center gap-3 cursor-pointer shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]">
         <div class="text-sm font-bold">[ DROP PDF HERE TO ADD WATERMARK ]</div>
-        <div class="text-xs text-neutral-600">Overlay custom text or brand logos with rotation, opacity, and tiling options.</div>
-        <button type="button" id="btnWatermarkSelect" class="term-btn term-btn-primary text-xs py-1.5 px-4 mt-1">
+        <button type="button" id="btnWatermarkSelect" class="term-btn term-btn-primary text-xs py-1.5 px-4 mt-1 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
           SELECT PDF FILE
         </button>
         <input type="file" id="watermarkFileInput" accept=".pdf" class="hidden" />
@@ -101,54 +138,57 @@
       <div id="watermarkConfigSection" class="space-y-4 hidden">
         
         <!-- TOP COMMAND TOOLBAR (Standardized) -->
-        <div class="border border-black bg-white p-2 sm:p-2.5 flex flex-wrap sm:flex-nowrap items-center justify-between gap-2 sm:gap-3 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] min-w-0 w-full">
+        <div class="border border-black bg-white p-2 sm:p-2.5 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2 sm:gap-3 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] min-w-0 w-full">
           <!-- Left: Watermark Mode Controls -->
-          <div class="flex items-center gap-1.5 sm:gap-2 min-w-0 flex-1 mr-1 sm:mr-2">
-            <button type="button" id="btnModeText" class="term-btn term-btn-primary py-1 px-2.5 text-xs font-bold flex-shrink-0 whitespace-nowrap" title="Text Watermark Mode">
-              [ TEXT WATERMARK ]
+          <div class="grid grid-cols-2 gap-1 w-full sm:w-auto sm:flex sm:items-center sm:gap-2 min-w-0">
+            <button type="button" id="btnModeText" class="term-btn term-btn-primary py-1 px-2 text-[11px] sm:text-xs font-bold flex items-center justify-center whitespace-nowrap shadow-[1px_1px_0px_0px_rgba(0,0,0,1)]" title="Text Watermark Mode">
+              TEXT WATERMARK
             </button>
-            <button type="button" id="btnModeImage" class="term-btn py-1 px-2.5 text-xs font-bold flex-shrink-0 whitespace-nowrap" title="Image Watermark Mode">
-              [ IMAGE WATERMARK ]
+            <button type="button" id="btnModeImage" class="term-btn py-1 px-2 text-[11px] sm:text-xs font-bold flex items-center justify-center whitespace-nowrap shadow-[1px_1px_0px_0px_rgba(0,0,0,1)]" title="Image Watermark Mode">
+              IMAGE WATERMARK
             </button>
           </div>
 
           <!-- Right: Rename, Preview, Finish -->
-          <div class="flex items-center gap-1.5 sm:gap-2.5 flex-shrink-0 flex-wrap sm:flex-nowrap w-full sm:w-auto justify-end sm:justify-start">
+          <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-1.5 sm:gap-2.5 w-full sm:w-auto flex-shrink-0">
             <!-- RENAME FILE BEFORE EXPORT -->
-            <div class="flex items-center border border-black bg-white px-2 py-1 text-xs font-mono flex-shrink-0">
+            <div class="flex items-center border border-black bg-white px-2 py-1 text-xs font-mono w-full sm:w-auto">
               <label for="watermarkOutputFilename" class="text-neutral-500 font-bold uppercase flex items-center gap-1 select-none whitespace-nowrap mr-1">
                 <span class="w-4 h-4 rounded-xs bg-amber-100 text-amber-800 flex items-center justify-center text-[10px] flex-shrink-0">✏️</span>
                 <span class="hidden md:inline">NAME:</span>
               </label>
-              <input type="text" id="watermarkOutputFilename" class="font-mono font-bold text-black bg-transparent border-none outline-none w-20 xs:w-28 sm:w-32 md:w-40 placeholder-neutral-400 truncate" value="watermarked_document" placeholder="output_name" title="Rename output file before exporting" />
+              <input type="text" id="watermarkOutputFilename" class="font-mono font-bold text-black bg-transparent border-none outline-none flex-1 min-w-0 sm:w-28 md:w-36 placeholder-neutral-400 truncate" value="watermarked_document" placeholder="output_name" title="Rename output file before exporting" />
               <span class="text-neutral-500 font-bold select-none whitespace-nowrap">.pdf</span>
             </div>
 
-            <button type="button" id="btnPreviewWatermarkDoc" class="term-btn text-xs py-1.5 px-2.5 sm:px-3 font-bold flex items-center gap-1 hover:bg-black hover:text-white transition-none uppercase font-mono tracking-wider flex-shrink-0 whitespace-nowrap" title="Preview Document Before Downloading">
-              <span class="text-sky-500">👁</span>
-              <span class="hidden sm:inline">PREVIEW DOCUMENT</span>
-              <span class="sm:hidden">PREVIEW</span>
-            </button>
-            <button type="button" id="btnProcessWatermark" class="term-btn term-btn-primary text-xs py-1.5 px-4 sm:px-6 font-bold flex items-center gap-1.5 uppercase font-mono tracking-wider flex-shrink-0 whitespace-nowrap">
-              <span>FINISH</span>
-              <span>→</span>
-            </button>
+            <!-- Action Buttons: Preview & Finish -->
+            <div class="flex items-center gap-1.5 sm:gap-2 w-full sm:w-auto">
+              <button type="button" id="btnPreviewWatermarkDoc" class="term-btn text-xs py-1.5 px-2.5 sm:px-3 font-bold flex items-center justify-center gap-1 hover:bg-black hover:text-white transition-none uppercase font-mono tracking-wider flex-1 sm:flex-initial whitespace-nowrap shadow-[1px_1px_0px_0px_rgba(0,0,0,1)]" title="Preview Document Before Downloading">
+                <span class="text-sky-500">👁</span>
+                <span class="hidden sm:inline">PREVIEW DOCUMENT</span>
+                <span class="sm:hidden text-[11px]">PREVIEW</span>
+              </button>
+              <button type="button" id="btnProcessWatermark" class="term-btn term-btn-primary text-xs py-1.5 px-4 sm:px-6 font-bold flex items-center justify-center gap-1.5 uppercase font-mono tracking-wider flex-1 sm:flex-initial whitespace-nowrap shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+                <span>FINISH</span>
+                <span>→</span>
+              </button>
+            </div>
           </div>
         </div>
 
         <!-- SUB-TOOLBAR: Document Meta & Change File -->
-        <div class="border border-black bg-neutral-50 px-3.5 py-2 flex flex-wrap items-center justify-between gap-2 text-xs font-mono">
+        <div class="border border-black bg-neutral-50 px-3.5 py-2 flex flex-wrap items-center justify-between gap-2 text-xs font-mono shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
           <div class="flex items-center gap-2 flex-wrap">
             <span class="font-bold">SOURCE:</span>
             <span id="watermarkFileMeta" class="font-bold text-black truncate max-w-sm sm:max-w-md">document.pdf (0 pages)</span>
-            <button type="button" id="btnChangeWatermarkFile" class="term-btn text-[11px] py-0.5 px-2" title="Change PDF file">
+            <button type="button" id="btnChangeWatermarkFile" class="term-btn text-[11px] py-0.5 px-2 shadow-[1px_1px_0px_0px_rgba(0,0,0,1)]" title="Change PDF file">
               CHANGE FILE
             </button>
           </div>
         </div>
 
         <!-- Configuration Grid Box -->
-        <div class="border border-black p-4 sm:p-6 bg-white space-y-6">
+        <div class="border border-black p-4 sm:p-6 bg-white space-y-6 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]">
           <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
           
           <!-- Left Column: Controls (5 cols) -->
@@ -314,31 +354,27 @@
           </div>
 
           <!-- Right Column: Live Visual Preview (7 cols) -->
-          <div class="lg:col-span-7 flex flex-col space-y-3">
-            <div class="flex items-center justify-between border-b border-black pb-2 text-xs">
-              <span class="font-bold">LIVE PREVIEW</span>
+          <div class="lg:col-span-7 flex flex-col space-y-3 border border-black bg-neutral-50 p-3 sm:p-4 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]">
+            <div class="flex items-center justify-between border-b border-black pb-2 text-xs font-mono">
+              <span class="font-bold">// LIVE PREVIEW</span>
               
               <!-- Page Navigator -->
               <div class="flex items-center gap-2 font-mono">
-                <button type="button" id="btnWatermarkPrevPage" class="term-btn text-xs py-0.5 px-2">
+                <button type="button" id="btnWatermarkPrevPage" class="term-btn text-xs py-0.5 px-2 shadow-[1px_1px_0px_0px_rgba(0,0,0,1)]">
                   &lt; PREV
                 </button>
-                <span id="watermarkPageIndicator" class="font-bold">PAGE 1 OF 1</span>
-                <button type="button" id="btnWatermarkNextPage" class="term-btn text-xs py-0.5 px-2">
+                <span id="watermarkPageIndicator" class="font-bold bg-white border border-black px-2 py-0.5">PAGE 1 OF 1</span>
+                <button type="button" id="btnWatermarkNextPage" class="term-btn text-xs py-0.5 px-2 shadow-[1px_1px_0px_0px_rgba(0,0,0,1)]">
                   NEXT &gt;
                 </button>
               </div>
             </div>
 
             <!-- Live Canvas Container -->
-            <div class="border border-black bg-neutral-100 p-2 sm:p-4 flex items-center justify-center min-h-[340px] sm:min-h-[420px] overflow-auto">
-              <div id="watermarkCanvasWrapper" class="relative shadow-md bg-white border border-black inline-block max-w-full">
+            <div class="border border-black bg-neutral-200 p-2 sm:p-4 flex items-center justify-center min-h-[340px] sm:min-h-[420px] overflow-auto shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+              <div id="watermarkCanvasWrapper" class="relative shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] bg-white border border-black inline-block max-w-full">
                 <canvas id="watermarkPreviewCanvas" class="block max-w-full mx-auto"></canvas>
               </div>
-            </div>
-
-            <div class="text-[11px] text-neutral-500 font-mono text-center">
-              * Live preview updates instantly with your watermark settings.
             </div>
           </div>
 
@@ -352,7 +388,7 @@
   </main>
 
   <!-- FULL PAGE PREVIEW MODAL / LIGHTBOX -->
-  <div id="pagePreviewModal" class="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-2 sm:p-4 hidden backdrop-blur-[1px]">
+  <div id="pagePreviewModal" class="fixed inset-0 bg-black/80 z-[100] flex items-center justify-center p-2 sm:p-4 hidden backdrop-blur-[1px]" style="z-index: 100;">
     <div class="bg-white border-2 border-black max-w-5xl w-full h-[94vh] flex flex-col shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
       
       <!-- Modal Header -->
@@ -594,22 +630,24 @@
 
   <!-- FOOTER -->
   <footer class="border-t border-black bg-white mt-auto">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-center gap-4 text-xs">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex flex-col sm:flex-row items-center justify-center gap-3 text-xs">
       <div class="flex items-center gap-2.5">
         <div class="w-5 h-5 bg-black rounded flex items-center justify-center p-0.5 flex-shrink-0">
           <img src="./assets/logo.svg" alt="Anixss-PDFer" class="w-full h-full object-contain" />
         </div>
         <span class="font-bold text-black font-mono">Anixss-PDFer</span>
-        <span>•</span>
-        <span class="text-neutral-600 font-mono text-[11px]">Browser-Based PDF Toolkit</span>
+      </div>
+      <span class="hidden sm:inline text-neutral-400">•</span>
+      <div class="flex items-center gap-3 text-neutral-600 font-mono text-[11px]">
+        <a href="https://aniketsonwane.github.io/AniketSonwane-Socials/" target="_blank" rel="noopener noreferrer" class="hover:underline hover:text-black transition-colors">Developed by <span class="font-bold text-black">Anixss</span></a>
       </div>
     </div>
   </footer>
 
-  <script src="js/file-transfer.js?v=10"></script>
-  <script src="js/pdf-preview.js?v=10"></script>
-  <script src="js/pdf-tools.js?v=10"></script>
-  <script src="js/converters.js?v=10"></script>
-  <script src="js/app.js?v=10"></script>
+  <script src="js/file-transfer.js?v=12"></script>
+  <script src="js/pdf-preview.js?v=12"></script>
+  <script src="js/pdf-tools.js?v=12"></script>
+  <script src="js/converters.js?v=12"></script>
+  <script src="js/app.js?v=12"></script>
 </body>
 </html>

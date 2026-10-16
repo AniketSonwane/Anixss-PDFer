@@ -3,9 +3,47 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Image to PDF Converter — Anixss-PDFer</title>
-  <link rel="icon" type="image/svg+xml" href="./assets/favicon.svg">
-  <meta name="description" content="Convert JPG, PNG, and WebP images into standardized PDF documents with custom ordering and margins. 100% client-side in your browser.">
+  <title>Convert Images to PDF Online Free — JPG, PNG, WebP | Anixss-PDFer</title>
+  <meta name="description" content="Compile multiple JPG, PNG, and WebP images into a single standardized PDF document. Drag-and-drop image reordering and custom margin controls.">
+  <meta name="keywords" content="image to pdf, convert jpg to pdf, png to pdf, webp to pdf, photos to pdf converter free">
+  <meta name="author" content="Anixss-PDFer">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://anixss-pdfer.com/image-to-pdf.html">
+  <link rel="icon" type="image/svg+xml" href="./assets/favicon.svg?v=3">
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://anixss-pdfer.com/image-to-pdf.html">
+  <meta property="og:title" content="Convert Images to PDF Online Free — JPG, PNG, WebP | Anixss-PDFer">
+  <meta property="og:description" content="Compile multiple JPG, PNG, and WebP images into a single standardized PDF document. Drag-and-drop image reordering and custom margin controls.">
+  <meta property="og:image" content="https://anixss-pdfer.com/assets/logo.svg">
+  <meta property="og:site_name" content="Anixss-PDFer">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:url" content="https://anixss-pdfer.com/image-to-pdf.html">
+  <meta name="twitter:title" content="Convert Images to PDF Online Free — JPG, PNG, WebP | Anixss-PDFer">
+  <meta name="twitter:description" content="Compile multiple JPG, PNG, and WebP images into a single standardized PDF document. Drag-and-drop image reordering and custom margin controls.">
+  <meta name="twitter:image" content="https://anixss-pdfer.com/assets/logo.svg">
+
+  <!-- JSON-LD Structured Data Schema -->
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Convert Images to PDF Online Free",
+  "url": "https://anixss-pdfer.com/image-to-pdf.html",
+  "description": "Compile multiple JPG, PNG, and WebP images into a single standardized PDF document. Drag-and-drop image reordering and custom margin controls.",
+  "applicationCategory": "UtilitiesApplication",
+  "operatingSystem": "Any",
+  "browserRequirements": "Requires JavaScript. Requires HTML5.",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  }
+}
+  </script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -24,7 +62,7 @@
     }
   </script>
 
-  <link rel="stylesheet" href="src/output.css?v=10">
+  <link rel="stylesheet" href="src/output.css?v=12">
 
   <script src="./assets/vendor/pdf-lib.min.js"></script>
   <script>
@@ -45,7 +83,7 @@
           </div>
           <div class="flex items-center gap-1.5">
             <span class="text-lg sm:text-xl font-extrabold tracking-tight text-black font-mono">Anixss<span class="text-neutral-400 font-normal">-</span>PDFer</span>
-            <span class="text-[10px] font-mono border border-black px-1.5 py-0.5 bg-black text-white font-bold tracking-wider">v1.0</span>
+            <span class="text-[10px] font-mono border border-black px-1.5 py-0.5 bg-black text-white font-bold tracking-wider">v2.0</span>
           </div>
         </a>
       </div>
@@ -81,9 +119,9 @@
     <div id="panel_img2pdf" class="space-y-4">
       
       <!-- TOP COMMAND TOOLBAR (Standardized) -->
-      <div class="border border-black bg-white p-2 sm:p-2.5 flex flex-wrap sm:flex-nowrap items-center justify-between gap-2 sm:gap-3 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] min-w-0 w-full">
+      <div class="border border-black bg-white p-2 sm:p-2.5 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2 sm:gap-3 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] min-w-0 w-full">
         <!-- Left: Add Images & Count badge -->
-        <div class="flex items-center gap-1.5 sm:gap-2 min-w-0 flex-1 mr-1 sm:mr-2">
+        <div class="flex items-center gap-1.5 sm:gap-2 min-w-0">
           <button type="button" id="btnImg2PdfAddFiles" class="term-btn text-xs py-1 px-2.5 flex items-center gap-1 flex-shrink-0 whitespace-nowrap" onclick="document.getElementById('img2pdfFileInput').click()">
             <span>(+) ADD IMAGES</span>
           </button>
@@ -91,40 +129,42 @@
         </div>
 
         <!-- Right: Rename, Preview, Finish -->
-          <div class="flex items-center gap-1.5 sm:gap-2.5 flex-shrink-0 flex-wrap sm:flex-nowrap w-full sm:w-auto justify-end sm:justify-start">
+        <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-1.5 sm:gap-2.5 w-full sm:w-auto flex-shrink-0">
           <!-- RENAME FILE BEFORE EXPORT -->
-          <div class="flex items-center border border-black bg-white px-2 py-1 text-xs font-mono flex-shrink-0">
+          <div class="flex items-center border border-black bg-white px-2 py-1 text-xs font-mono w-full sm:w-auto">
             <label for="img2pdfOutputFilename" class="text-neutral-500 font-bold uppercase flex items-center gap-1 select-none whitespace-nowrap mr-1">
               <span class="w-4 h-4 rounded-xs bg-amber-100 text-amber-800 flex items-center justify-center text-[10px] flex-shrink-0">✏️</span>
               <span class="hidden md:inline">NAME:</span>
             </label>
-            <input type="text" id="img2pdfOutputFilename" class="font-mono font-bold text-black bg-transparent border-none outline-none w-20 xs:w-28 sm:w-32 md:w-40 placeholder-neutral-400 truncate" value="anixss_images" placeholder="output_name" title="Rename output file before exporting" />
+            <input type="text" id="img2pdfOutputFilename" class="font-mono font-bold text-black bg-transparent border-none outline-none flex-1 min-w-0 sm:w-28 md:w-36 placeholder-neutral-400 truncate" value="anixss_images" placeholder="output_name" title="Rename output file before exporting" />
             <span class="text-neutral-500 font-bold select-none whitespace-nowrap">.pdf</span>
           </div>
 
-          <button type="button" id="btnPreviewImg2PdfDoc" class="term-btn text-xs py-1.5 px-2.5 sm:px-3 font-bold flex items-center gap-1 hover:bg-black hover:text-white transition-none uppercase font-mono tracking-wider flex-shrink-0 whitespace-nowrap" disabled title="Preview Document Before Downloading">
-            <span class="text-sky-500">👁</span>
-            <span class="hidden sm:inline">PREVIEW DOCUMENT</span>
-            <span class="sm:hidden">PREVIEW</span>
-          </button>
-          <button type="button" id="btnProcessImg2Pdf" class="term-btn term-btn-primary text-xs py-1.5 px-4 sm:px-6 font-bold flex items-center gap-1.5 uppercase font-mono tracking-wider flex-shrink-0 whitespace-nowrap" disabled>
-            <span>FINISH</span>
-            <span>→</span>
-          </button>
+          <!-- Action Buttons: Preview & Finish -->
+          <div class="flex items-center gap-1.5 sm:gap-2 w-full sm:w-auto">
+            <button type="button" id="btnPreviewImg2PdfDoc" class="term-btn text-xs py-1.5 px-2.5 sm:px-3 font-bold flex items-center justify-center gap-1 hover:bg-black hover:text-white transition-none uppercase font-mono tracking-wider flex-1 sm:flex-initial whitespace-nowrap shadow-[1px_1px_0px_0px_rgba(0,0,0,1)]" disabled title="Preview Document Before Downloading">
+              <span class="text-sky-500">👁</span>
+              <span class="hidden sm:inline">PREVIEW DOCUMENT</span>
+              <span class="sm:hidden text-[11px]">PREVIEW</span>
+            </button>
+            <button type="button" id="btnProcessImg2Pdf" class="term-btn term-btn-primary text-xs py-1.5 px-4 sm:px-6 font-bold flex items-center justify-center gap-1.5 uppercase font-mono tracking-wider flex-1 sm:flex-initial whitespace-nowrap shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]" disabled>
+              <span>FINISH</span>
+              <span>→</span>
+            </button>
+          </div>
         </div>
       </div>
 
       <!-- Dropzone -->
-      <div id="img2pdfDropzone" class="term-dropzone p-6 sm:p-8 text-center flex flex-col items-center justify-center gap-3 cursor-pointer">
+      <div id="img2pdfDropzone" class="term-dropzone p-6 sm:p-8 text-center flex flex-col items-center justify-center gap-3 cursor-pointer shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]">
         <div class="text-sm font-bold">DROP IMAGE FILES HERE (JPG, PNG, WEBP)</div>
-        <div class="text-xs text-neutral-600">Select multiple images to compile into a standardized PDF with custom ordering.</div>
-        <button type="button" id="btnImg2PdfSelect" class="term-btn term-btn-primary text-xs py-1.5 px-4 mt-1">
+        <button type="button" id="btnImg2PdfSelect" class="term-btn term-btn-primary text-xs py-1.5 px-4 mt-1 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
           SELECT IMAGES
         </button>
         <input type="file" id="img2pdfFileInput" multiple accept="image/jpeg,image/png,image/webp,image/gif,image/bmp" class="hidden" />
       </div>
 
-      <div class="border border-black p-4 space-y-4">
+      <div class="border border-black bg-white p-4 space-y-4 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]">
         <div class="text-xs font-bold border-b border-black pb-2 tracking-wider">PDF LAYOUT OPTIONS</div>
         
         <div class="grid grid-cols-1 sm:grid-cols-4 gap-4">
@@ -184,7 +224,7 @@
   </main>
 
   <!-- FULL PAGE PREVIEW MODAL / LIGHTBOX -->
-  <div id="pagePreviewModal" class="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-2 sm:p-4 hidden backdrop-blur-[1px]">
+  <div id="pagePreviewModal" class="fixed inset-0 bg-black/80 z-[100] flex items-center justify-center p-2 sm:p-4 hidden backdrop-blur-[1px]" style="z-index: 100;">
     <div class="bg-white border-2 border-black max-w-5xl w-full h-[94vh] flex flex-col shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
       
       <!-- Modal Header -->
@@ -426,22 +466,24 @@
 
   <!-- FOOTER -->
   <footer class="border-t border-black bg-white mt-auto">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-center gap-4 text-xs">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex flex-col sm:flex-row items-center justify-center gap-3 text-xs">
       <div class="flex items-center gap-2.5">
         <div class="w-5 h-5 bg-black rounded flex items-center justify-center p-0.5 flex-shrink-0">
           <img src="./assets/logo.svg" alt="Anixss-PDFer" class="w-full h-full object-contain" />
         </div>
         <span class="font-bold text-black font-mono">Anixss-PDFer</span>
-        <span>•</span>
-        <span class="text-neutral-600 font-mono text-[11px]">Browser-Based PDF Toolkit</span>
+      </div>
+      <span class="hidden sm:inline text-neutral-400">•</span>
+      <div class="flex items-center gap-3 text-neutral-600 font-mono text-[11px]">
+        <a href="https://aniketsonwane.github.io/AniketSonwane-Socials/" target="_blank" rel="noopener noreferrer" class="hover:underline hover:text-black transition-colors">Developed by <span class="font-bold text-black">Anixss</span></a>
       </div>
     </div>
   </footer>
 
-  <script src="js/file-transfer.js?v=10"></script>
-  <script src="js/pdf-preview.js?v=10"></script>
-  <script src="js/pdf-tools.js?v=10"></script>
-  <script src="js/converters.js?v=10"></script>
-  <script src="js/app.js?v=10"></script>
+  <script src="js/file-transfer.js?v=12"></script>
+  <script src="js/pdf-preview.js?v=12"></script>
+  <script src="js/pdf-tools.js?v=12"></script>
+  <script src="js/converters.js?v=12"></script>
+  <script src="js/app.js?v=12"></script>
 </body>
 </html>

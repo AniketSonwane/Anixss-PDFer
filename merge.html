@@ -3,9 +3,47 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Merge PDF — Anixss-PDFer</title>
-  <link rel="icon" type="image/svg+xml" href="./assets/favicon.svg">
-  <meta name="description" content="Combine multiple PDF files into one clean document with visual page previews and optional blank separator pages. 100% client-side in your browser.">
+  <title>Merge PDF Files Online Free — Fast, Private, Zero Uploads | Anixss-PDFer</title>
+  <meta name="description" content="Combine multiple PDF files and images into one clean document. Drag-and-drop file stacks, insert blank separator pages, and preview before saving.">
+  <meta name="keywords" content="merge pdf, combine pdf files, join pdf, pdf merger free, merge pdf online without upload">
+  <meta name="author" content="Anixss-PDFer">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://anixss-pdfer.com/merge.html">
+  <link rel="icon" type="image/svg+xml" href="./assets/favicon.svg?v=3">
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://anixss-pdfer.com/merge.html">
+  <meta property="og:title" content="Merge PDF Files Online Free — Fast, Private, Zero Uploads | Anixss-PDFer">
+  <meta property="og:description" content="Combine multiple PDF files and images into one clean document. Drag-and-drop file stacks, insert blank separator pages, and preview before saving.">
+  <meta property="og:image" content="https://anixss-pdfer.com/assets/logo.svg">
+  <meta property="og:site_name" content="Anixss-PDFer">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:url" content="https://anixss-pdfer.com/merge.html">
+  <meta name="twitter:title" content="Merge PDF Files Online Free — Fast, Private, Zero Uploads | Anixss-PDFer">
+  <meta name="twitter:description" content="Combine multiple PDF files and images into one clean document. Drag-and-drop file stacks, insert blank separator pages, and preview before saving.">
+  <meta name="twitter:image" content="https://anixss-pdfer.com/assets/logo.svg">
+
+  <!-- JSON-LD Structured Data Schema -->
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Merge PDF Files Online Free",
+  "url": "https://anixss-pdfer.com/merge.html",
+  "description": "Combine multiple PDF files and images into one clean document. Drag-and-drop file stacks, insert blank separator pages, and preview before saving.",
+  "applicationCategory": "UtilitiesApplication",
+  "operatingSystem": "Any",
+  "browserRequirements": "Requires JavaScript. Requires HTML5.",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  }
+}
+  </script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -26,7 +64,7 @@
   </script>
 
   <!-- Custom Terminal Stylesheet -->
-  <link rel="stylesheet" href="src/output.css?v=10">
+  <link rel="stylesheet" href="src/output.css?v=12">
 
   <!-- Core PDF Libraries -->
   <script src="./assets/vendor/pdf-lib.min.js"></script>
@@ -62,7 +100,7 @@
           </div>
           <div class="flex items-center gap-1.5">
             <span class="text-lg sm:text-xl font-extrabold tracking-tight text-black font-mono">Anixss<span class="text-neutral-400 font-normal">-</span>PDFer</span>
-            <span class="text-[10px] font-mono border border-black px-1.5 py-0.5 bg-black text-white font-bold tracking-wider">v1.0</span>
+            <span class="text-[10px] font-mono border border-black px-1.5 py-0.5 bg-black text-white font-bold tracking-wider">v2.0</span>
           </div>
         </a>
       </div>
@@ -96,12 +134,11 @@
 
     <!-- MERGE PANEL -->
     <div id="panel_merge" class="space-y-4">
-      
-      <!-- TOP COMMAND TOOLBAR (Matching Screenshot) -->
-      <div class="border border-black bg-white p-2 sm:p-2.5 flex flex-wrap sm:flex-nowrap items-center justify-between gap-2 sm:gap-3 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] min-w-0 w-full">
+         <!-- TOP COMMAND TOOLBAR (Matching Screenshot) -->
+      <div class="border border-black bg-white p-2 sm:p-2.5 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2 sm:gap-3 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] min-w-0 w-full">
         
         <!-- Left: Segmented Mode Pill & Tool Buttons -->
-        <div class="flex items-center gap-1.5 sm:gap-2 min-w-0 flex-1 mr-1 sm:mr-2">
+        <div class="flex items-center gap-1.5 sm:gap-2 flex-wrap min-w-0">
           
           <!-- View Mode Segmented Switcher (Files vs Pages) -->
           <div class="inline-flex border border-black p-0.5 bg-neutral-100 flex-shrink-0">
@@ -119,7 +156,7 @@
 
           <!-- Add Dropdown -->
           <div class="relative inline-block text-left flex-shrink-0" id="mergeAddDropdownWrapper">
-            <button type="button" id="btnMergeAddToggle" class="term-btn text-xs py-1 px-2.5 flex items-center gap-1">
+            <button type="button" id="btnMergeAddToggle" class="term-btn text-xs py-1 px-2.5 flex items-center gap-1 shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] font-bold">
               <span>(+) Add</span>
               <span class="text-[9px]">▼</span>
             </button>
@@ -140,40 +177,43 @@
 
           <!-- Action Icons (Rotate, Delete) -->
           <div class="flex items-center gap-1 flex-shrink-0">
-            <button type="button" id="btnMergeRotateCcw" class="term-btn text-xs py-1 px-2" title="Rotate Selected -90° (Counter-Clockwise)"><span class="text-indigo-500">↶</span></button>
-            <button type="button" id="btnMergeRotateCw" class="term-btn text-xs py-1 px-2" title="Rotate Selected +90° (Clockwise)"><span class="text-indigo-500">↷</span></button>
-            <button type="button" id="btnMergeDeleteSelected" class="term-btn text-xs py-1 px-2 text-neutral-800 hover:bg-black hover:text-white" title="Delete Selected"><span class="text-rose-500">🗑</span></button>
+            <button type="button" id="btnMergeRotateCcw" class="term-btn text-xs py-1 px-2 shadow-[1px_1px_0px_0px_rgba(0,0,0,1)]" title="Rotate Selected -90° (Counter-Clockwise)"><span class="text-indigo-500">↶</span></button>
+            <button type="button" id="btnMergeRotateCw" class="term-btn text-xs py-1 px-2 shadow-[1px_1px_0px_0px_rgba(0,0,0,1)]" title="Rotate Selected +90° (Clockwise)"><span class="text-indigo-500">↷</span></button>
+            <button type="button" id="btnMergeDeleteSelected" class="term-btn text-xs py-1 px-2 text-neutral-800 hover:bg-black hover:text-white shadow-[1px_1px_0px_0px_rgba(0,0,0,1)]" title="Delete Selected"><span class="text-rose-500">🗑</span></button>
           </div>
 
         </div>
 
         <!-- Right: Preview Combined Document & Finish Button -->
-        <div class="flex items-center gap-1.5 sm:gap-2.5 flex-shrink-0 flex-wrap sm:flex-nowrap w-full sm:w-auto justify-end sm:justify-start">
+        <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-1.5 sm:gap-2.5 w-full sm:w-auto flex-shrink-0">
           <!-- RENAME FILE BEFORE EXPORT -->
-          <div class="flex items-center border border-black bg-white px-2 py-1 text-xs font-mono flex-shrink-0">
+          <div class="flex items-center border border-black bg-white px-2 py-1 text-xs font-mono w-full sm:w-auto">
             <label for="mergeOutputFilename" class="text-neutral-500 font-bold uppercase flex items-center gap-1 select-none whitespace-nowrap mr-1">
               <span class="w-4 h-4 rounded-xs bg-amber-100 text-amber-800 flex items-center justify-center text-[10px] flex-shrink-0">✏️</span>
               <span class="hidden md:inline">NAME:</span>
             </label>
-            <input type="text" id="mergeOutputFilename" class="font-mono font-bold text-black bg-transparent border-none outline-none w-20 xs:w-28 sm:w-32 md:w-40 placeholder-neutral-400 truncate" value="anixss_merged" placeholder="output_name" title="Rename output file before exporting" />
+            <input type="text" id="mergeOutputFilename" class="font-mono font-bold text-black bg-transparent border-none outline-none flex-1 min-w-0 sm:w-28 md:w-36 placeholder-neutral-400 truncate" value="anixss_merged" placeholder="output_name" title="Rename output file before exporting" />
             <span class="text-neutral-500 font-bold select-none whitespace-nowrap">.pdf</span>
           </div>
 
-          <button type="button" id="btnPreviewMergedDoc" class="term-btn text-xs py-1.5 px-2.5 sm:px-3 font-bold flex items-center gap-1 hover:bg-black hover:text-white transition-none uppercase font-mono tracking-wider flex-shrink-0 whitespace-nowrap" disabled title="Preview Combined Output Document">
-            <span class="text-sky-500">👁</span>
-            <span class="hidden sm:inline">PREVIEW DOCUMENT</span>
-            <span class="sm:hidden">PREVIEW</span>
-          </button>
-          <button type="button" id="btnProcessMerge" class="term-btn term-btn-primary text-xs py-1.5 px-4 sm:px-6 font-bold flex items-center gap-1.5 uppercase font-mono tracking-wider flex-shrink-0 whitespace-nowrap" disabled>
-            <span>FINISH</span>
-            <span>→</span>
-          </button>
+          <!-- Action Buttons: Preview & Finish -->
+          <div class="flex items-center gap-1.5 sm:gap-2 w-full sm:w-auto">
+            <button type="button" id="btnPreviewMergedDoc" class="term-btn text-xs py-1.5 px-2.5 sm:px-3 font-bold flex items-center justify-center gap-1 hover:bg-black hover:text-white transition-none uppercase font-mono tracking-wider flex-1 sm:flex-initial whitespace-nowrap shadow-[1px_1px_0px_0px_rgba(0,0,0,1)]" disabled title="Preview Combined Output Document">
+              <span class="text-sky-500">👁</span>
+              <span class="hidden sm:inline">PREVIEW DOCUMENT</span>
+              <span class="sm:hidden text-[11px]">PREVIEW</span>
+            </button>
+            <button type="button" id="btnProcessMerge" class="term-btn term-btn-primary text-xs py-1.5 px-4 sm:px-6 font-bold flex items-center justify-center gap-1.5 uppercase font-mono tracking-wider flex-1 sm:flex-initial whitespace-nowrap shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]" disabled>
+              <span>FINISH</span>
+              <span>→</span>
+            </button>
+          </div>
         </div>
 
       </div>
 
       <!-- SUB-TOOLBAR: Select all, Blank page rule, Sort, Layout -->
-      <div class="border border-black bg-neutral-50 px-3.5 py-2.5 flex flex-wrap items-center justify-between gap-3 text-xs font-mono">
+      <div class="border border-black bg-neutral-50 px-3.5 py-2.5 flex flex-wrap items-center justify-between gap-3 text-xs font-mono shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
         
         <!-- Left: Select all -->
         <div class="flex items-center gap-2 flex-wrap">
@@ -187,14 +227,14 @@
 
         <!-- Right: Sort & Grid View Switch -->
         <div class="flex items-center gap-3">
-          <button type="button" id="btnMergeSortToggle" class="border border-black bg-white px-2.5 py-1 text-xs font-bold hover:bg-black hover:text-white flex items-center gap-1 transition-none" title="Sort Alphabetically">
+          <button type="button" id="btnMergeSortToggle" class="border border-black bg-white px-2.5 py-1 text-xs font-bold hover:bg-black hover:text-white flex items-center gap-1 transition-none shadow-[1px_1px_0px_0px_rgba(0,0,0,1)]" title="Sort Alphabetically">
             <span id="mergeSortLabel">⇅ A-Z</span>
           </button>
 
           <div class="h-4 w-[1px] bg-neutral-300"></div>
 
           <div class="flex items-center gap-1">
-            <button type="button" id="btnMergeLayoutGrid" class="p-1 border border-black bg-black text-white" title="Grid View">
+            <button type="button" id="btnMergeLayoutGrid" class="p-1 border border-black bg-black text-white shadow-[1px_1px_0px_0px_rgba(0,0,0,1)]" title="Grid View">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
             </button>
             <button type="button" id="btnMergeLayoutList" class="p-1 border border-transparent hover:border-black" title="List View">
@@ -209,17 +249,16 @@
       <div id="mergeCanvasArea" class="space-y-4">
         
         <!-- Empty Dropzone State -->
-        <div id="mergeEmptyState" class="term-dropzone p-8 sm:p-12 text-center flex flex-col items-center justify-center gap-3 cursor-pointer">
-          <div class="border border-black p-3 bg-sky-50 text-sky-600">
+        <div id="mergeEmptyState" class="term-dropzone p-8 sm:p-12 text-center flex flex-col items-center justify-center gap-3 cursor-pointer shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]">
+          <div class="border border-black p-3 bg-sky-50 text-sky-600 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
           <svg class="w-8 h-8 stroke-current" fill="none" stroke-width="2" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
             </svg>
           </div>
           <div class="space-y-1">
             <div class="text-base sm:text-lg font-bold tracking-wider">[ DROP 2+ PDF FILES HERE TO MERGE ]</div>
-            <div class="text-xs text-neutral-600">Supports PDF documents and images. Reorder pages and files with drag-and-drop.</div>
           </div>
-          <button type="button" id="btnMergeSelectInitial" class="term-btn term-btn-primary px-6 py-2 text-xs font-bold mt-2">
+          <button type="button" id="btnMergeSelectInitial" class="term-btn term-btn-primary px-6 py-2 text-xs font-bold mt-2 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
             SELECT PDF FILES
           </button>
         </div>
@@ -234,8 +273,7 @@
         <!-- VIEW 2: PAGES MODE (Individual Page Cards with Drag & Drop Reorganization) -->
         <div id="mergePagesContainer" class="hidden space-y-3">
           <div class="flex items-center justify-between text-xs font-mono text-neutral-600 bg-neutral-50 p-2 border border-black">
-            <span>// DRAG ANY PAGE THUMBNAIL TO REORDER THE COMBINED DOCUMENT</span>
-            <span id="mergePagesSummaryBadge" class="font-bold text-black">0 PAGES</span>
+            <span id="mergePagesSummaryBadge" class="font-bold text-black ml-auto">0 PAGES</span>
           </div>
           <div id="mergePagesGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 py-2">
             <!-- Dynamic Page Thumbnail Cards + Blank Pads will be rendered here -->
@@ -253,8 +291,6 @@
       <div class="border-t border-black pt-4 flex flex-wrap items-center justify-between gap-3 text-xs font-mono">
         <div class="flex items-center gap-3">
           <span class="font-bold" id="mergeSummaryText">OUTPUT: 0 FILES // 0 PAGES</span>
-          <span>•</span>
-          <span class="text-neutral-500">100% IN-BROWSER MEMORY</span>
         </div>
         <div class="flex items-center gap-2 flex-wrap">
           <button type="button" id="btnMergeClearAll" class="term-btn text-xs py-1 px-3">
@@ -268,7 +304,7 @@
   </main>
 
   <!-- FULL PAGE PREVIEW MODAL / LIGHTBOX -->
-  <div id="pagePreviewModal" class="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-2 sm:p-4 hidden backdrop-blur-[1px]">
+  <div id="pagePreviewModal" class="fixed inset-0 bg-black/80 z-[100] flex items-center justify-center p-2 sm:p-4 hidden backdrop-blur-[1px]" style="z-index: 100;">
     <div class="bg-white border-2 border-black max-w-5xl w-full h-[94vh] flex flex-col shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
       
       <!-- Modal Header -->
@@ -510,22 +546,24 @@
 
   <!-- FOOTER -->
   <footer class="border-t border-black bg-white mt-auto">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-center gap-4 text-xs">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex flex-col sm:flex-row items-center justify-center gap-3 text-xs">
       <div class="flex items-center gap-2.5">
         <div class="w-5 h-5 bg-black rounded flex items-center justify-center p-0.5 flex-shrink-0">
           <img src="./assets/logo.svg" alt="Anixss-PDFer" class="w-full h-full object-contain" />
         </div>
         <span class="font-bold text-black font-mono">Anixss-PDFer</span>
-        <span>•</span>
-        <span class="text-neutral-600 font-mono text-[11px]">Browser-Based PDF Toolkit</span>
+      </div>
+      <span class="hidden sm:inline text-neutral-400">•</span>
+      <div class="flex items-center gap-3 text-neutral-600 font-mono text-[11px]">
+        <a href="https://aniketsonwane.github.io/AniketSonwane-Socials/" target="_blank" rel="noopener noreferrer" class="hover:underline hover:text-black transition-colors">Developed by <span class="font-bold text-black">Anixss</span></a>
       </div>
     </div>
   </footer>
 
-  <script src="js/file-transfer.js?v=10"></script>
-  <script src="js/pdf-preview.js?v=10"></script>
-  <script src="js/pdf-tools.js?v=10"></script>
-  <script src="js/converters.js?v=10"></script>
-  <script src="js/app.js?v=10"></script>
+  <script src="js/file-transfer.js?v=12"></script>
+  <script src="js/pdf-preview.js?v=12"></script>
+  <script src="js/pdf-tools.js?v=12"></script>
+  <script src="js/converters.js?v=12"></script>
+  <script src="js/app.js?v=12"></script>
 </body>
 </html>

@@ -144,17 +144,68 @@ body {
   transition: transform 0.05s ease, background-color 0.05s ease;
 }
 
-.term-card-interactive:hover {
-  background-color: #000000;
-  color: #ffffff;
+.term-card-interactive:hover,
+.tool-grid-card:hover {
+  background-color: #000000 !important;
+  color: #ffffff !important;
 }
 
-.term-card-interactive:hover .term-invert-target {
+.term-card-interactive:hover p,
+.term-card-interactive:hover p *,
+.term-card-interactive:hover .text-neutral-400,
+.term-card-interactive:hover .text-neutral-500,
+.term-card-interactive:hover .text-neutral-600,
+.term-card-interactive:hover .text-neutral-700,
+.term-card-interactive:hover .text-neutral-800,
+.term-card-interactive:hover .text-slate-500,
+.term-card-interactive:hover .text-slate-600,
+.term-card-interactive:hover span.font-mono:not(span[class*="bg-"] *),
+.term-card-interactive:hover div.font-mono,
+.tool-grid-card:hover p,
+.tool-grid-card:hover p *,
+.tool-grid-card:hover .text-neutral-400,
+.tool-grid-card:hover .text-neutral-500,
+.tool-grid-card:hover .text-neutral-600,
+.tool-grid-card:hover .text-neutral-700,
+.tool-grid-card:hover .text-neutral-800,
+.tool-grid-card:hover .text-slate-500,
+.tool-grid-card:hover .text-slate-600,
+.tool-grid-card:hover span.font-mono:not(span[class*="bg-"] *),
+.tool-grid-card:hover div.font-mono {
+  color: #ffffff !important;
+}
+
+/* Ensure icon badge text (#1 in Tool 10) always remains crisp black */
+.term-card-interactive span[class*="bg-"] span,
+.tool-grid-card span[class*="bg-"] span,
+.term-card-interactive:hover span[class*="bg-"] span,
+.tool-grid-card:hover span[class*="bg-"] span {
+  color: #000000 !important;
+}
+
+.term-card-interactive:hover .border-black,
+.tool-grid-card:hover .border-black,
+.term-card-interactive:hover .border-t,
+.tool-grid-card:hover .border-t {
+  border-color: #ffffff !important;
+}
+
+.term-card-interactive:hover .term-card-invert,
+.term-card-interactive:hover .term-invert-target,
+.tool-grid-card:hover .term-card-invert,
+.tool-grid-card:hover .term-invert-target {
   border-color: #ffffff !important;
   color: #ffffff !important;
 }
 
-.term-card-interactive:hover svg {
+.term-card-interactive:hover .term-card-icon,
+.tool-grid-card:hover .term-card-icon {
+  stroke: #ffffff;
+  fill: #ffffff;
+}
+
+.term-card-interactive:hover svg:not([class*="text-"]):not([class*="stroke-"]),
+.tool-grid-card:hover svg:not([class*="text-"]):not([class*="stroke-"]) {
   stroke: #ffffff !important;
 }
 

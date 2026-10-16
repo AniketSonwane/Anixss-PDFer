@@ -3,9 +3,47 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Split PDF — Anixss-PDFer</title>
-  <link rel="icon" type="image/svg+xml" href="./assets/favicon.svg">
-  <meta name="description" content="Visually split PDF files into individual pages or custom ranges with interactive scissor cut points. 100% client-side in your browser.">
+  <title>Split PDF Online Free — Visual Scissor Cut & Page Ranges | Anixss-PDFer</title>
+  <meta name="description" content="Split PDF documents into separate files using interactive visual scissor cuts or custom page ranges. Instant client-side ZIP archive download.">
+  <meta name="keywords" content="split pdf, separate pdf pages, split pdf into multiple files, cut pdf, split pdf online free">
+  <meta name="author" content="Anixss-PDFer">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://anixss-pdfer.com/split.html">
+  <link rel="icon" type="image/svg+xml" href="./assets/favicon.svg?v=3">
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://anixss-pdfer.com/split.html">
+  <meta property="og:title" content="Split PDF Online Free — Visual Scissor Cut & Page Ranges | Anixss-PDFer">
+  <meta property="og:description" content="Split PDF documents into separate files using interactive visual scissor cuts or custom page ranges. Instant client-side ZIP archive download.">
+  <meta property="og:image" content="https://anixss-pdfer.com/assets/logo.svg">
+  <meta property="og:site_name" content="Anixss-PDFer">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:url" content="https://anixss-pdfer.com/split.html">
+  <meta name="twitter:title" content="Split PDF Online Free — Visual Scissor Cut & Page Ranges | Anixss-PDFer">
+  <meta name="twitter:description" content="Split PDF documents into separate files using interactive visual scissor cuts or custom page ranges. Instant client-side ZIP archive download.">
+  <meta name="twitter:image" content="https://anixss-pdfer.com/assets/logo.svg">
+
+  <!-- JSON-LD Structured Data Schema -->
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Split PDF Online Free",
+  "url": "https://anixss-pdfer.com/split.html",
+  "description": "Split PDF documents into separate files using interactive visual scissor cuts or custom page ranges. Instant client-side ZIP archive download.",
+  "applicationCategory": "UtilitiesApplication",
+  "operatingSystem": "Any",
+  "browserRequirements": "Requires JavaScript. Requires HTML5.",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  }
+}
+  </script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -25,7 +63,7 @@
     }
   </script>
 
-  <link rel="stylesheet" href="src/output.css?v=10">
+  <link rel="stylesheet" href="src/output.css?v=12">
 
   <script src="./assets/vendor/pdf-lib.min.js"></script>
   <script>
@@ -60,7 +98,7 @@
           </div>
           <div class="flex items-center gap-1.5">
             <span class="text-lg sm:text-xl font-extrabold tracking-tight text-black font-mono">Anixss<span class="text-neutral-400 font-normal">-</span>PDFer</span>
-            <span class="text-[10px] font-mono border border-black px-1.5 py-0.5 bg-black text-white font-bold tracking-wider">v1.0</span>
+            <span class="text-[10px] font-mono border border-black px-1.5 py-0.5 bg-black text-white font-bold tracking-wider">v2.0</span>
           </div>
         </a>
       </div>
@@ -96,125 +134,110 @@
     <div id="panel_split" class="space-y-6">
       
       <!-- Dropzone -->
-      <div id="splitDropzone" class="term-dropzone p-6 sm:p-8 text-center flex flex-col items-center justify-center gap-3 cursor-pointer">
-        <div class="text-sm font-bold">DROP A PDF FILE HERE TO SPLIT</div>
-        <div class="text-xs text-neutral-600">Click scissor cut lines between pages to divide into separate documents, or split every page.</div>
-        <button type="button" id="btnSplitSelect" class="term-btn term-btn-primary text-xs py-1.5 px-4 mt-1">
+      <div id="splitDropzone" class="term-dropzone p-6 sm:p-8 text-center flex flex-col items-center justify-center gap-3 cursor-pointer shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]">
+        <div class="text-sm font-bold">[ DROP A PDF FILE HERE TO SPLIT PAGES ]</div>
+        <button type="button" id="btnSplitSelect" class="term-btn term-btn-primary text-xs py-1.5 px-4 mt-1 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
           SELECT PDF FILE
         </button>
         <input type="file" id="splitFileInput" accept=".pdf" class="hidden" />
       </div>
 
       <!-- Config & Visual Workspace Section -->
-      <div id="splitConfigSection" class="space-y-4 hidden">
+      <div id="splitConfigSection" class="hidden space-y-4">
         
-        <!-- TOP COMMAND TOOLBAR (Standardized) -->
-        <div class="border border-black bg-white p-2 sm:p-2.5 flex flex-wrap sm:flex-nowrap items-center justify-between gap-2 sm:gap-3 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] min-w-0 w-full">
+        <!-- TOP COMMAND TOOLBAR -->
+        <div class="border border-black bg-white p-2 sm:p-2.5 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2 sm:gap-3 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] min-w-0 w-full">
           <!-- Left: Split Action Controls -->
-          <div class="flex items-center gap-1.5 sm:gap-2 min-w-0 flex-1 mr-1 sm:mr-2">
-            <button type="button" id="btnSplitAllCuts" class="term-btn text-xs py-1 px-2 font-bold flex items-center gap-1 flex-shrink-0 whitespace-nowrap" title="Place a split cut between every single page">
+          <div class="grid grid-cols-2 xs:grid-cols-4 gap-1 w-full sm:w-auto sm:flex sm:items-center sm:gap-1.5 min-w-0">
+            <button type="button" id="btnSplitAllCuts" class="term-btn text-[11px] sm:text-xs py-1 px-1.5 font-bold flex items-center justify-center gap-1 whitespace-nowrap shadow-[1px_1px_0px_0px_rgba(0,0,0,1)]" title="Place a split cut between every single page">
               <span class="text-rose-500">✂</span>
-              <span class="hidden sm:inline">SPLIT ALL</span>
-              <span class="sm:hidden">ALL</span>
+              <span>SPLIT ALL</span>
             </button>
-            <button type="button" id="btnSplitEvery2Cuts" class="term-btn text-xs py-1 px-2 font-bold flex items-center gap-1 flex-shrink-0 whitespace-nowrap" title="Split every 2 pages">
+            <button type="button" id="btnSplitEvery2Cuts" class="term-btn text-[11px] sm:text-xs py-1 px-1.5 font-bold flex items-center justify-center gap-1 whitespace-nowrap shadow-[1px_1px_0px_0px_rgba(0,0,0,1)]" title="Split every 2 pages">
               <span class="text-rose-500">✂</span>
-              <span class="hidden sm:inline">EVERY 2</span>
-              <span class="sm:hidden">2</span>
+              <span>EVERY 2</span>
             </button>
-            <button type="button" id="btnSplitClearCuts" class="term-btn text-xs py-1 px-2 font-bold flex-shrink-0 whitespace-nowrap" title="Remove all cut lines">
-              CLEAR
+            <button type="button" id="btnSplitClearCuts" class="term-btn text-[11px] sm:text-xs py-1 px-1.5 font-bold flex items-center justify-center whitespace-nowrap shadow-[1px_1px_0px_0px_rgba(0,0,0,1)]" title="Remove all cut lines">
+              <span>CLEAR</span>
             </button>
-            <button type="button" id="btnSplitSortToggle" class="term-btn text-xs py-1 px-2 font-bold flex-shrink-0 whitespace-nowrap" title="Toggle sorting order">
-              ⇅ A-Z
+            <button type="button" id="btnSplitSortToggle" class="term-btn text-[11px] sm:text-xs py-1 px-1.5 font-bold flex items-center justify-center whitespace-nowrap shadow-[1px_1px_0px_0px_rgba(0,0,0,1)]" title="Toggle sorting order">
+              <span>⇅ A-Z</span>
             </button>
           </div>
 
           <!-- Right: Rename, Preview, Finish -->
-          <div class="flex items-center gap-1.5 sm:gap-2.5 flex-shrink-0 flex-wrap sm:flex-nowrap w-full sm:w-auto justify-end sm:justify-start">
+          <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-1.5 sm:gap-2.5 w-full sm:w-auto flex-shrink-0">
             <!-- RENAME FILE BEFORE EXPORT -->
-            <div class="flex items-center border border-black bg-white px-2 py-1 text-xs font-mono flex-shrink-0">
+            <div class="flex items-center border border-black bg-white px-2 py-1 text-xs font-mono w-full sm:w-auto">
               <label for="splitOutputFilename" class="text-neutral-500 font-bold uppercase flex items-center gap-1 select-none whitespace-nowrap mr-1">
                 <span class="w-4 h-4 rounded-xs bg-amber-100 text-amber-800 flex items-center justify-center text-[10px] flex-shrink-0">✏️</span>
                 <span class="hidden md:inline">NAME:</span>
               </label>
-              <input type="text" id="splitOutputFilename" class="font-mono font-bold text-black bg-transparent border-none outline-none w-20 xs:w-28 sm:w-32 md:w-40 placeholder-neutral-400 truncate" value="split_document" placeholder="output_name" title="Rename output file before exporting" />
+              <input type="text" id="splitOutputFilename" class="font-mono font-bold text-black bg-transparent border-none outline-none flex-1 min-w-0 sm:w-28 md:w-36 placeholder-neutral-400 truncate" value="split_document" placeholder="output_name" title="Rename output file before exporting" />
               <span class="text-neutral-500 font-bold select-none whitespace-nowrap">.pdf</span>
             </div>
 
-            <button type="button" id="btnPreviewSplitDoc" class="term-btn text-xs py-1.5 px-2.5 sm:px-3 font-bold flex items-center gap-1 hover:bg-black hover:text-white transition-none uppercase font-mono tracking-wider flex-shrink-0 whitespace-nowrap" disabled title="Preview Document Before Downloading">
-              <span class="text-sky-500">👁</span>
-              <span class="hidden sm:inline">PREVIEW DOCUMENT</span>
-              <span class="sm:hidden">PREVIEW</span>
-            </button>
-            <button type="button" id="btnProcessSplit" class="term-btn term-btn-primary text-xs py-1.5 px-4 sm:px-6 font-bold flex items-center gap-1.5 uppercase font-mono tracking-wider flex-shrink-0 whitespace-nowrap" disabled>
-              <span>FINISH</span>
-              <span>→</span>
-            </button>
+            <!-- Action Buttons: Preview & Finish -->
+            <div class="flex items-center gap-1.5 sm:gap-2 w-full sm:w-auto">
+              <button type="button" id="btnPreviewSplitDoc" class="term-btn text-xs py-1.5 px-2.5 sm:px-3 font-bold flex items-center justify-center gap-1 hover:bg-black hover:text-white transition-none uppercase font-mono tracking-wider flex-1 sm:flex-initial whitespace-nowrap shadow-[1px_1px_0px_0px_rgba(0,0,0,1)]" disabled title="Preview Document Before Downloading">
+                <span class="text-sky-500">👁</span>
+                <span class="hidden sm:inline">PREVIEW DOCUMENT</span>
+                <span class="sm:hidden text-[11px]">PREVIEW</span>
+              </button>
+              <button type="button" id="btnProcessSplit" class="term-btn term-btn-primary text-xs py-1.5 px-4 sm:px-6 font-bold flex items-center justify-center gap-1.5 uppercase font-mono tracking-wider flex-1 sm:flex-initial whitespace-nowrap shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]" disabled>
+                <span>FINISH</span>
+                <span>→</span>
+              </button>
+            </div>
           </div>
         </div>
 
-        <!-- SUB-TOOLBAR: Document Meta & Active Cuts -->
-        <div class="border border-black bg-neutral-50 px-3.5 py-2 flex flex-wrap items-center justify-between gap-2 text-xs font-mono">
+        <!-- SUB-TOOLBAR: Range filter & Split Interval Controls -->
+        <div class="border border-black bg-neutral-50 px-3.5 py-2.5 flex flex-wrap items-center justify-between gap-3 text-xs font-mono shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+          <div class="flex items-center gap-2 flex-1 min-w-[220px]">
+            <label for="splitRangeInput" class="font-bold whitespace-nowrap">SPLIT RANGES:</label>
+            <input type="text" id="splitRangeInput" placeholder="e.g. 1-2, 3-4" class="term-input flex-1 py-1" />
+          </div>
+
+          <div class="flex items-center gap-2 flex-shrink-0">
+            <label for="splitCustomIntervalInput" class="font-bold whitespace-nowrap">SPLIT EVERY:</label>
+            <input type="number" id="splitCustomIntervalInput" min="1" max="100" value="2" class="term-input w-16 py-1 text-center" />
+            <span class="text-neutral-500 font-bold">PAGES</span>
+            <button type="button" id="btnApplyIntervalCut" class="term-btn text-xs py-1 px-2.5 font-bold shadow-[1px_1px_0px_0px_rgba(0,0,0,1)]" title="Split every N pages">
+              [ APPLY ]
+            </button>
+          </div>
+
+          <div class="flex items-center gap-2 font-bold flex-shrink-0">
+            <span>ACTIVE CUTS: <span id="splitActiveCutsCount">0</span></span>
+            <span class="text-neutral-300">|</span>
+            <span id="splitOutputBadge" class="border border-black bg-white text-black text-[10px] px-2 py-0.5 font-bold uppercase shadow-[1px_1px_0px_0px_rgba(0,0,0,1)]">DIRECT PDF</span>
+          </div>
+        </div>
+
+        <!-- SOURCE & OUTPUT META BANNER -->
+        <div class="border border-black bg-white px-3.5 py-2 flex flex-wrap items-center justify-between gap-2 text-xs font-mono shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
           <div class="flex items-center gap-2 flex-wrap">
             <span class="font-bold">SOURCE:</span>
-            <span id="splitFileMeta" class="font-bold text-black truncate max-w-sm sm:max-w-md">document.pdf (0 pages)</span>
-            <button type="button" id="btnChangeSplitFile" class="term-btn text-[11px] py-0.5 px-2" title="Change PDF file">
+            <span id="splitFileMeta" class="text-neutral-700 font-bold truncate max-w-xs sm:max-w-md">document.pdf (0 pages)</span>
+            <button type="button" id="btnChangeSplitFile" class="term-btn text-[11px] py-0.5 px-2 shadow-[1px_1px_0px_0px_rgba(0,0,0,1)]" title="Change PDF file">
               CHANGE FILE
             </button>
           </div>
-          <div class="flex items-center gap-2 font-bold">
-            <span class="font-mono text-xs">ACTIVE CUTS: <span id="splitActiveCutsCount">0</span>]</span>
+          <div class="flex items-center gap-2 text-neutral-800 font-semibold truncate max-w-sm sm:max-w-xl">
+            <span class="font-bold text-black">OUTPUT PLAN:</span>
+            <span id="splitSummaryText">1 PDF file (No cuts placed)</span>
           </div>
         </div>
 
-        <!-- Visual Workspace Box -->
-        <div class="border border-black p-4 sm:p-6 bg-white space-y-5">
-
-        <!-- Interactive Scissor Grid Workspace -->
-        <div class="space-y-2">
-          <div class="flex items-center justify-between border-b border-black pb-1.5 text-xs font-mono font-bold">
-            <span>PAGES GRID (<span id="splitPageCountDisplay">0</span> PAGES)</span>
-            <span class="text-neutral-500 hidden sm:inline">[CLICK "SPLIT AFTER" ON ANY PAGE TO CUT • HOVER TO PREVIEW / ROTATE / DELETE]</span>
-          </div>
-
-          <!-- Responsive Grid Container for Page Thumbnails -->
-          <div id="splitWorkspaceContainer" class="p-4 sm:p-6 bg-neutral-100/70 border border-black min-h-[380px] grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 select-none">
-            <!-- Dynamically populated by renderSplitWorkspace() -->
-          </div>
+        <!-- Section Header for Grid -->
+        <div class="flex items-center justify-between border border-black bg-neutral-50 px-3.5 py-2 text-xs font-mono font-bold shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+          <span>PAGES GRID (<span id="splitPageCountDisplay">0</span> PAGES)</span>
         </div>
 
-        <!-- Synchronized Page Ranges & Real-Time Output Calculation -->
-        <div class="border border-black p-4 bg-neutral-50 space-y-3">
-          <div class="flex flex-wrap items-center justify-between gap-3">
-            <div class="space-y-1 flex-1 min-w-[260px]">
-              <label for="splitRangeInput" class="block text-xs font-bold tracking-wider">PAGE RANGES:</label>
-              <input type="text" id="splitRangeInput" placeholder="e.g. 1-2, 3-4" class="term-input text-xs font-mono" />
-              <p class="text-[11px] text-neutral-500">You can also type ranges here directly — the scissor cut lines will update automatically.</p>
-            </div>
-
-            <!-- Fixed N Helper input for arbitrary interval -->
-            <div class="space-y-1 flex-shrink-0">
-              <label for="splitCustomIntervalInput" class="block text-xs font-bold tracking-wider">SPLIT EVERY N PAGES:</label>
-              <div class="flex items-center gap-2 flex-wrap">
-                <input type="number" id="splitCustomIntervalInput" min="1" max="100" value="2" class="term-input w-20 text-center text-xs" />
-                <button type="button" id="btnApplyIntervalCut" class="term-btn text-xs py-1.5 px-3 font-bold">
-                  APPLY CUTS
-                </button>
-              </div>
-            </div>
-          </div>
-
-          <!-- Real-Time Output Calculation Summary -->
-          <div class="border-t border-black/20 pt-2.5 flex flex-wrap items-center justify-between gap-2 text-xs font-mono">
-            <div class="flex items-center gap-2 flex-wrap">
-              <span class="font-bold text-black">OUTPUT PLAN:</span>
-              <span id="splitSummaryText" class="text-neutral-800 font-semibold">1 PDF file (No cuts placed)</span>
-            </div>
-            <span id="splitOutputBadge" class="border border-black bg-white text-black text-[10px] px-2 py-0.5 font-bold uppercase">DIRECT PDF</span>
-          </div>
-        </div>
-
+        <!-- Responsive Grid Container for Page Thumbnails (matches rotate & remove pages) -->
+        <div id="splitWorkspaceContainer" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 select-none">
+          <!-- Dynamically populated by renderSplitWorkspace() -->
         </div>
 
       </div>
@@ -227,7 +250,7 @@
   </main>
 
   <!-- FULL PAGE PREVIEW MODAL / LIGHTBOX -->
-  <div id="pagePreviewModal" class="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-2 sm:p-4 hidden backdrop-blur-[1px]">
+  <div id="pagePreviewModal" class="fixed inset-0 bg-black/80 z-[100] flex items-center justify-center p-2 sm:p-4 hidden backdrop-blur-[1px]" style="z-index: 100;">
     <div class="bg-white border-2 border-black max-w-5xl w-full h-[94vh] flex flex-col shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
       
       <!-- Modal Header -->
@@ -469,22 +492,24 @@
 
   <!-- FOOTER -->
   <footer class="border-t border-black bg-white mt-auto">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-center gap-4 text-xs">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex flex-col sm:flex-row items-center justify-center gap-3 text-xs">
       <div class="flex items-center gap-2.5">
         <div class="w-5 h-5 bg-black rounded flex items-center justify-center p-0.5 flex-shrink-0">
           <img src="./assets/logo.svg" alt="Anixss-PDFer" class="w-full h-full object-contain" />
         </div>
         <span class="font-bold text-black font-mono">Anixss-PDFer</span>
-        <span>•</span>
-        <span class="text-neutral-600 font-mono text-[11px]">Browser-Based PDF Toolkit</span>
+      </div>
+      <span class="hidden sm:inline text-neutral-400">•</span>
+      <div class="flex items-center gap-3 text-neutral-600 font-mono text-[11px]">
+        <a href="https://aniketsonwane.github.io/AniketSonwane-Socials/" target="_blank" rel="noopener noreferrer" class="hover:underline hover:text-black transition-colors">Developed by <span class="font-bold text-black">Anixss</span></a>
       </div>
     </div>
   </footer>
 
-  <script src="js/file-transfer.js?v=10"></script>
-  <script src="js/pdf-preview.js?v=10"></script>
-  <script src="js/pdf-tools.js?v=10"></script>
-  <script src="js/converters.js?v=10"></script>
-  <script src="js/app.js?v=10"></script>
+  <script src="js/file-transfer.js?v=12"></script>
+  <script src="js/pdf-preview.js?v=12"></script>
+  <script src="js/pdf-tools.js?v=12"></script>
+  <script src="js/converters.js?v=12"></script>
+  <script src="js/app.js?v=12"></script>
 </body>
 </html>

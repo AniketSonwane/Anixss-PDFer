@@ -3,9 +3,47 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>About & Privacy — Anixss-PDFer</title>
-  <link rel="icon" type="image/svg+xml" href="./assets/favicon.svg">
-  <meta name="description" content="Technical overview, privacy guarantees, and architectural details of Anixss-PDFer. 100% client-side browser processing.">
+  <title>About & Security Guarantee — Anixss-PDFer | Zero-Upload Client Architecture</title>
+  <meta name="description" content="Learn how Anixss-PDFer guarantees absolute document privacy through 100% client-side WebAssembly, Canvas, and IndexedDB execution with zero server uploads.">
+  <meta name="keywords" content="pdf security, private pdf tools, client-side pdf editor, offline pdf toolkit, zero upload pdf">
+  <meta name="author" content="Anixss-PDFer">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://anixss-pdfer.com/about.html">
+  <link rel="icon" type="image/svg+xml" href="./assets/favicon.svg?v=3">
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://anixss-pdfer.com/about.html">
+  <meta property="og:title" content="About & Security Guarantee — Anixss-PDFer | Zero-Upload Client Architecture">
+  <meta property="og:description" content="Learn how Anixss-PDFer guarantees absolute document privacy through 100% client-side WebAssembly, Canvas, and IndexedDB execution with zero server uploads.">
+  <meta property="og:image" content="https://anixss-pdfer.com/assets/logo.svg">
+  <meta property="og:site_name" content="Anixss-PDFer">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:url" content="https://anixss-pdfer.com/about.html">
+  <meta name="twitter:title" content="About & Security Guarantee — Anixss-PDFer | Zero-Upload Client Architecture">
+  <meta name="twitter:description" content="Learn how Anixss-PDFer guarantees absolute document privacy through 100% client-side WebAssembly, Canvas, and IndexedDB execution with zero server uploads.">
+  <meta name="twitter:image" content="https://anixss-pdfer.com/assets/logo.svg">
+
+  <!-- JSON-LD Structured Data Schema -->
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "About & Security Guarantee",
+  "url": "https://anixss-pdfer.com/about.html",
+  "description": "Learn how Anixss-PDFer guarantees absolute document privacy through 100% client-side WebAssembly, Canvas, and IndexedDB execution with zero server uploads.",
+  "applicationCategory": "UtilitiesApplication",
+  "operatingSystem": "Any",
+  "browserRequirements": "Requires JavaScript. Requires HTML5.",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  }
+}
+  </script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -23,7 +61,7 @@
     }
   </script>
 
-  <link rel="stylesheet" href="src/output.css?v=10">
+  <link rel="stylesheet" href="src/output.css?v=12">
 </head>
 <body class="bg-white text-black font-mono flex flex-col min-h-screen antialiased selection:bg-black selection:text-white">
 
@@ -38,7 +76,7 @@
           </div>
           <div class="flex items-center gap-1.5">
             <span class="text-lg sm:text-xl font-extrabold tracking-tight text-black font-mono">Anixss<span class="text-neutral-400 font-normal">-</span>PDFer</span>
-            <span class="text-[10px] font-mono border border-black px-1.5 py-0.5 bg-black text-white font-bold tracking-wider">v1.0</span>
+            <span class="text-[10px] font-mono border border-black px-1.5 py-0.5 bg-black text-white font-bold tracking-wider">v2.0</span>
           </div>
         </a>
       </div>
@@ -147,11 +185,11 @@
           <img src="./assets/logo.svg" alt="Anixss-PDFer" class="w-full h-full object-contain" />
         </div>
         <span class="font-bold text-black font-mono">Anixss-PDFer</span>
-        <span>•</span>
-        <span class="text-neutral-600 font-mono text-[11px]">Browser-Based PDF Toolkit</span>
       </div>
       <span class="hidden sm:inline text-neutral-400">•</span>
-      <div class="flex items-center gap-3 text-neutral-600">
+      <div class="flex items-center gap-3 text-neutral-600 font-mono text-[11px]">
+        <a href="https://aniketsonwane.github.io/AniketSonwane-Socials/" target="_blank" rel="noopener noreferrer" class="hover:underline hover:text-black transition-colors">Developed by <span class="font-bold text-black">Anixss</span></a>
+        <span>•</span>
         <a href="index.html" class="underline hover:text-black font-mono text-[11px]">HOME</a>
       </div>
     </div>

@@ -34,6 +34,9 @@
     addSecDoc: null,
     addSecBuffer: null,
     addSecFilename: '',
+    addPages: [],
+    addSelectedIds: new Set(),
+    _insertAddAtIndex: -1,
 
     // Resize Tool State
     resizeDoc: null,
@@ -238,6 +241,7 @@
 
   const TOOL_PAGE_MAP = {
     merge: 'merge.html',
+    organize: 'organize-pages.html',
     remove: 'remove-pages.html',
     add: 'add-pages.html',
     resize: 'resize.html',
@@ -290,6 +294,7 @@
     // Update Workspace Header
     const toolMeta = {
       merge: { title: 'TOOL // 01: MERGE PDF', badge: 'BATCH PROCESSING' },
+      organize: { title: 'TOOL // 13: ORGANIZE PAGES', badge: 'PAGE REORDER' },
       remove: { title: 'TOOL // 02: REMOVE PAGES', badge: 'PAGE EXTRACTION' },
       add: { title: 'TOOL // 03: ADD PAGES', badge: 'PAGE INSERTER' },
       resize: { title: 'TOOL // 04: RESIZE PDF', badge: 'DIMENSION SCALER' },
@@ -323,25 +328,93 @@
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
+  function hideCurrentToolDropzone(toolKey) {
+    if (window.FileTransfer && window.FileTransfer.hideCurrentToolDropzone) {
+      window.FileTransfer.hideCurrentToolDropzone();
+    }
+    const dropzoneIds = [
+      'addPrimaryDropzone', 'addDropzone',
+      'nupDropzone', 'nUpDropzone',
+      'img2pdfDropzone', 'img2pdfEmptyState',
+      'splitDropzone',
+      'rotateDropzone',
+      'removeDropzone',
+      'resizeDropzone',
+      'watermarkDropzone',
+      'redactDropzone',
+      'pageNumbersDropzone',
+      'pdf2imgDropzone',
+      'mergeEmptyState'
+    ];
+    dropzoneIds.forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) el.classList.add('hidden');
+    });
+    document.querySelectorAll('.term-dropzone').forEach((el) => {
+      if (el.id !== 'addSecDropzone') {
+        el.classList.add('hidden');
+      }
+    });
+  }
+
+  function showCurrentToolDropzone(toolKey) {
+    const dropzoneIds = [
+      'addPrimaryDropzone', 'addDropzone',
+      'nupDropzone', 'nUpDropzone',
+      'img2pdfDropzone', 'img2pdfEmptyState',
+      'splitDropzone',
+      'rotateDropzone',
+      'removeDropzone',
+      'resizeDropzone',
+      'watermarkDropzone',
+      'redactDropzone',
+      'pageNumbersDropzone',
+      'pdf2imgDropzone',
+      'mergeEmptyState'
+    ];
+    dropzoneIds.forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) el.classList.remove('hidden');
+    });
+    document.querySelectorAll('.term-dropzone').forEach((el) => {
+      el.classList.remove('hidden');
+    });
+  }
+
   // Handle files passed into a specific tool
   async function handleFilesForTool(toolKey, files) {
     if (!files || files.length === 0) return;
 
-    if (toolKey === 'merge') {
+    hideCurrentToolDropzone(toolKey);
+
+    if (toolKey === 'merge' || toolKey === 'organize') {
       const pdfFiles = files.filter((f) => f.type === 'application/pdf' || f.name.toLowerCase().endsWith('.pdf'));
       if (pdfFiles.length === 0) {
-        termLog('No valid PDF files selected for Merge.', 'error');
+        termLog(`No valid PDF files selected for ${toolKey === 'organize' ? 'Organize Pages' : 'Merge'}.`, 'error');
         return;
       }
       for (const file of pdfFiles) {
         await addMergeFile(file);
       }
+      if (toolKey === 'organize' || document.body.dataset.page === 'organize') {
+        AppState.mergeViewMode = 'pages';
+        renderMergeView();
+      }
     } else if (toolKey === 'remove') {
       const pdfFile = files.find((f) => f.type === 'application/pdf' || f.name.toLowerCase().endsWith('.pdf'));
       if (pdfFile) await loadRemovePdf(pdfFile);
     } else if (toolKey === 'add') {
-      const pdfFile = files.find((f) => f.type === 'application/pdf' || f.name.toLowerCase().endsWith('.pdf'));
-      if (pdfFile) await loadAddPrimaryPdf(pdfFile);
+      const pdfFiles = files.filter((f) => f.type === 'application/pdf' || f.name.toLowerCase().endsWith('.pdf'));
+      if (pdfFiles.length > 0) {
+        if (!AppState.addDoc || !AppState.addPages || AppState.addPages.length === 0) {
+          await loadAddPrimaryPdf(pdfFiles[0]);
+          if (pdfFiles.length > 1) {
+            await insertAddPdfFiles(pdfFiles.slice(1));
+          }
+        } else {
+          await insertAddPdfFiles(pdfFiles);
+        }
+      }
     } else if (toolKey === 'resize') {
       const pdfFile = files.find((f) => f.type === 'application/pdf' || f.name.toLowerCase().endsWith('.pdf'));
       if (pdfFile) await loadResizePdf(pdfFile);
@@ -2080,7 +2153,9 @@
         termLog(msg);
       });
 
-      const filename = getCustomFilename('mergeOutputFilename', `anixss_merged_${Date.now()}.pdf`);
+      const isOrganize = document.body.dataset.page === 'organize';
+      const defaultName = isOrganize ? `anixss_organized_${Date.now()}.pdf` : `anixss_merged_${Date.now()}.pdf`;
+      const filename = getCustomFilename('mergeOutputFilename', defaultName);
       const blob = new Blob([mergedBytes], { type: 'application/pdf' });
 
       showResultModal(
@@ -2089,7 +2164,12 @@
         'pdf',
         `${AppState.mergeFiles.length} file(s) // ${effectivePages.length} page(s) // ${Converters.formatBytes(blob.size)}`
       );
-      termLog(`Merge complete! Saved as ${filename} (${effectivePages.length} pages, ${Converters.formatBytes(blob.size)})`, 'success');
+      termLog(
+        isOrganize
+          ? `Pages organized! Saved as ${filename} (${effectivePages.length} pages, ${Converters.formatBytes(blob.size)})`
+          : `Merge complete! Saved as ${filename} (${effectivePages.length} pages, ${Converters.formatBytes(blob.size)})`,
+        'success'
+      );
     } catch (e) {
       termLog(`Merge failed: ${e.message}`, 'error');
       alert(`Merge Error: ${e.message}`);
@@ -2163,7 +2243,10 @@
     PagePreviewModal.rotationDelta = 0;
 
     const modal = document.getElementById('pagePreviewModal');
-    if (modal) modal.classList.remove('hidden');
+    if (modal) {
+      modal.style.zIndex = '100';
+      modal.classList.remove('hidden');
+    }
     await renderFullPreviewContent();
     termLog(`Opened preview for "${title}" (${pdfDoc.numPages} page(s)).`, 'success');
   }
@@ -2199,7 +2282,10 @@
     PagePreviewModal.rotationDelta = 0;
 
     const modal = document.getElementById('pagePreviewModal');
-    if (modal) modal.classList.remove('hidden');
+    if (modal) {
+      modal.style.zIndex = '100';
+      modal.classList.remove('hidden');
+    }
     renderFullPreviewContent();
     termLog(`Opened preview for file "${fileItem.name}" (${filePages.length} active page(s)).`);
   }
@@ -2221,7 +2307,10 @@
     PagePreviewModal.rotationDelta = 0;
 
     const modal = document.getElementById('pagePreviewModal');
-    if (modal) modal.classList.remove('hidden');
+    if (modal) {
+      modal.style.zIndex = '100';
+      modal.classList.remove('hidden');
+    }
     renderFullPreviewContent();
     termLog(`Opened full preview for page #${clampedIndex + 1} of ${effectivePages.length}.`);
   }
@@ -2300,6 +2389,33 @@
 
       const totalRot = ((file.rotation || 0) + (currentPageItem.rotation || 0) + PagePreviewModal.rotationDelta + 360) % 360;
       await renderModalCanvas(file, currentPageItem.pageNumber, canvas, totalRot, spinner);
+    } else if (PagePreviewModal.mode === 'addPage') {
+      const idx = PagePreviewModal.activePageIndex; // 0-indexed
+      const pageItem = AppState.addPages[idx];
+      const total = AppState.addPages.length;
+
+      if (!pageItem) return;
+
+      if (modalTitle) {
+        modalTitle.textContent = pageItem.type === 'blankPage'
+          ? `Blank Page (${Math.round(pageItem.width || 595)} × ${Math.round(pageItem.height || 842)} pt)`
+          : (pageItem.fileName || 'Page Preview');
+      }
+      if (modalBadge) modalBadge.textContent = `PAGE ${idx + 1} / ${total}`;
+      if (pageIndicator) {
+        pageIndicator.textContent = `PAGE ${idx + 1} OF ${total}${pageItem.type === 'blankPage' ? ' (Blank Page - Solid White)' : (pageItem.pageNumber ? ` (${pageItem.fileName} p.${pageItem.pageNumber})` : '')}`;
+      }
+
+      if (btnPrev) btnPrev.disabled = idx <= 0;
+      if (btnNext) btnNext.disabled = idx >= total - 1;
+
+      if (pageItem.type === 'blankPage') {
+        drawModalBlankCanvas(canvas, idx + 1, pageItem);
+        if (spinner) spinner.classList.add('hidden');
+      } else {
+        const rot = ((pageItem.rotation || 0) + PagePreviewModal.rotationDelta + 360) % 360;
+        await renderModalDocCanvas(pageItem.pdfDoc, pageItem.pageNumber, canvas, rot, spinner);
+      }
     } else {
       const effectivePages = getEffectivePageList();
       const idx = PagePreviewModal.activePageIndex; // 0-indexed
@@ -2433,6 +2549,11 @@
     _previewModalEventsBound = true;
 
     document.getElementById('btnClosePagePreview')?.addEventListener('click', closeFullPreview);
+    document.getElementById('pagePreviewModal')?.addEventListener('click', (e) => {
+      if (e.target === e.currentTarget) {
+        closeFullPreview();
+      }
+    });
 
     document.getElementById('btnPreviewPrevPage')?.addEventListener('click', () => {
       if (PagePreviewModal.activePageIndex > 0) {
@@ -2505,7 +2626,7 @@
     }
 
     const modalHtml = `
-  <div id="pagePreviewModal" class="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-2 sm:p-4 hidden backdrop-blur-[1px]">
+  <div id="pagePreviewModal" class="fixed inset-0 bg-black/80 z-[100] flex items-center justify-center p-2 sm:p-4 hidden backdrop-blur-[1px]" style="z-index: 100;">
     <div class="bg-white border-2 border-black max-w-5xl w-full h-[94vh] flex flex-col shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
       
       <!-- Modal Header -->
@@ -2790,8 +2911,9 @@
   }
 
   // ==========================================
-  // TOOL 03: ADD PAGES
+  // TOOL 03: VISUAL ADD PAGES WORKSPACE
   // ==========================================
+
   async function loadAddPrimaryPdf(file) {
     try {
       termLog(`Loading primary PDF for page insertion: ${file.name}...`);
@@ -2800,183 +2922,601 @@
       AppState.addDoc = await PdfPreview.loadDocument(AppState.addBuffer.slice(0));
       setToolOutputFilename('addOutputFilename', file.name, '_extended');
 
-      document.getElementById('addConfigSection').classList.remove('hidden');
+      document.getElementById('addConfigSection')?.classList.remove('hidden');
+      document.getElementById('addPrimaryDropzone')?.classList.add('hidden');
       document.getElementById('addDropzone')?.classList.add('hidden');
-      document.getElementById('addPrimaryMeta').textContent = `${file.name} (${AppState.addDoc.numPages} pages, ${Converters.formatBytes(file.size)})`;
-      
-      updateAddPageNumberDropdowns(AppState.addDoc.numPages);
-      termLog(`Primary PDF ready. Configured with ${AppState.addDoc.numPages} pages.`, 'success');
+
+      const meta = document.getElementById('addPrimaryMeta');
+      if (meta) meta.textContent = `${file.name} (${AppState.addDoc.numPages} pages, ${Converters.formatBytes(file.size)})`;
+
+      AppState.addPages = [];
+      AppState.addSelectedIds.clear();
+      const fileId = 'add_base_' + Math.random().toString(36).substr(2, 7);
+
+      for (let p = 1; p <= AppState.addDoc.numPages; p++) {
+        AppState.addPages.push({
+          id: 'add_p_' + Math.random().toString(36).substr(2, 9),
+          type: 'pdfPage',
+          fileId: fileId,
+          fileName: file.name,
+          buffer: AppState.addBuffer,
+          fileBuffer: AppState.addBuffer,
+          pageNumber: p,
+          pageIndex: p - 1,
+          rotation: 0,
+          pdfDoc: AppState.addDoc,
+          width: 595.28,
+          height: 841.89
+        });
+      }
+
+      renderAddPagesView();
+      termLog(`Base PDF ready with ${AppState.addDoc.numPages} pages. Click (+) between pages to insert a blank page or another PDF.`, 'success');
     } catch (e) {
       termLog(`Failed to load primary PDF: ${e.message}`, 'error');
       alert(`Failed to load PDF: ${e.message}`);
     }
   }
 
-  async function loadAddSecondaryPdf(file) {
-    try {
-      termLog(`Loading secondary PDF: ${file.name}...`);
-      AppState.addSecFilename = file.name;
-      AppState.addSecBuffer = await file.arrayBuffer();
-      AppState.addSecDoc = await PdfPreview.loadDocument(AppState.addSecBuffer.slice(0));
+  function renderAddPagesView() {
+    const pagesGrid = document.getElementById('addPagesGrid');
+    const badge = document.getElementById('addPagesSummaryBadge');
+    const btnFinish = document.getElementById('btnProcessAdd');
+    const btnPreview = document.getElementById('btnPreviewAddDoc');
 
-      document.getElementById('addSecFileMeta').textContent = `Loaded: ${file.name} (${AppState.addSecDoc.numPages} pages)`;
-      termLog(`Secondary PDF loaded successfully.`, 'success');
-    } catch (e) {
-      termLog(`Failed to load secondary PDF: ${e.message}`, 'error');
-      alert(`Failed to load secondary PDF: ${e.message}`);
+    const totalPages = AppState.addPages.length;
+    if (badge) badge.textContent = `${totalPages} PAGE${totalPages === 1 ? '' : 'S'}`;
+    if (btnFinish) btnFinish.disabled = totalPages === 0;
+    if (btnPreview) btnPreview.disabled = totalPages === 0;
+
+    updateAddSelectionCounts();
+
+    if (!pagesGrid) return;
+    pagesGrid.innerHTML = '';
+
+    if (totalPages === 0) {
+      const emptyCard = document.createElement('div');
+      emptyCard.className = 'col-span-full border-2 border-dashed border-black bg-neutral-50 p-8 flex flex-col items-center justify-center text-center gap-2 cursor-pointer hover:bg-neutral-100 transition-none select-none my-2 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]';
+      emptyCard.innerHTML = `
+        <div class="w-8 h-8 rounded-full border border-black flex items-center justify-center text-lg font-bold bg-white">+</div>
+        <div class="text-xs font-bold font-mono">Insert Blank or PDF</div>
+        <div class="text-[10px] text-neutral-500 font-mono">Click to insert page</div>
+      `;
+      emptyCard.addEventListener('click', (e) => {
+        showAddInlineInsertMenu(e.currentTarget, 0);
+      });
+      pagesGrid.appendChild(emptyCard);
+      return;
+    }
+
+    // Render each page card as a direct grid item with in-between (+) divider buttons
+    AppState.addPages.forEach((pageItem, index) => {
+      const isSelected = AppState.addSelectedIds.has(pageItem.id);
+      const displayPageNum = index + 1;
+      const pageRot = (pageItem.rotation || 0) % 360;
+
+      const pageCard = document.createElement('div');
+      pageCard.className = 'page-thumb-card relative group cursor-grab border-2 border-black bg-white p-2 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] transition-transform select-none flex flex-col justify-between';
+      pageCard.setAttribute('draggable', 'true');
+      pageCard.dataset.pageIndex = index;
+      pageCard.dataset.pageId = pageItem.id;
+
+      if (pageItem.type === 'blankPage') {
+        pageCard.classList.remove('bg-white');
+        pageCard.classList.add('bg-neutral-100');
+        pageCard.innerHTML = `
+          <div class="w-full flex items-center justify-between mb-1 pb-1 border-b border-black text-xs font-mono">
+            <label class="flex items-center cursor-pointer">
+              <input type="checkbox" class="w-3.5 h-3.5 accent-black cursor-pointer add-page-checkbox" data-page-id="${pageItem.id}" ${isSelected ? 'checked' : ''} />
+            </label>
+            <span class="font-bold text-[10px] bg-black text-white px-1.5 py-0.2">#${displayPageNum}</span>
+            <div class="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
+              <button type="button" class="term-btn text-[9px] p-0.5 btn-add-page-preview" title="Full page preview">👁</button>
+              <button type="button" class="term-btn text-[9px] p-0.5 btn-add-page-del" title="Remove blank page">✕</button>
+            </div>
+          </div>
+
+          <!-- Blank Page Sheet -->
+          <div class="relative bg-white border border-neutral-300 shadow-[1px_1px_2px_rgba(0,0,0,0.15)] flex flex-col items-center justify-center overflow-hidden my-1 cursor-pointer add-page-thumb-trigger group/thumb w-full" style="min-height: 140px; min-width: 100px; background-color: #ffffff;" title="Click for full page preview">
+            <span class="border border-black bg-white px-1 py-0.5 text-[9px] font-bold font-mono">[BLANK PAGE]</span>
+            <div class="absolute inset-0 bg-black/0 group-hover/thumb:bg-black/5 transition-colors flex items-center justify-center pointer-events-none">
+              <span class="opacity-0 group-hover/thumb:opacity-100 bg-black text-white text-[8px] font-mono px-1.5 py-0.5 font-bold shadow-[1px_1px_0px_0px_rgba(0,0,0,1)]">👁 VIEW</span>
+            </div>
+          </div>
+
+          <div class="text-[10px] text-neutral-600 truncate w-full text-center mt-1 font-mono">
+            [Blank Page]
+          </div>
+
+          <!-- In-Between (+) Button mounted on the right edge -->
+          <button type="button" class="card-plus-btn btn-add-insert-divider" style="position: absolute; left: calc(100% + 4px); top: calc(50% - 12px); z-index: 20;" data-insert-index="${index + 1}" title="Insert blank page or PDF after page ${displayPageNum}">
+            +
+          </button>
+
+          ${index === 0 ? `
+            <!-- Leading (+) Button mounted on the left edge for page 1 -->
+            <button type="button" class="card-plus-btn btn-add-insert-divider" style="position: absolute; left: -28px; top: calc(50% - 12px); z-index: 20;" data-insert-index="0" title="Insert blank page or PDF at start">
+              +
+            </button>
+          ` : ''}
+        `;
+      } else {
+        // PDF Page Card
+        pageCard.innerHTML = `
+          <div class="w-full flex items-center justify-between mb-1 pb-1 border-b border-black text-xs font-mono">
+            <label class="flex items-center cursor-pointer">
+              <input type="checkbox" class="w-3.5 h-3.5 accent-black cursor-pointer add-page-checkbox" data-page-id="${pageItem.id}" ${isSelected ? 'checked' : ''} />
+            </label>
+            <span class="font-bold text-[10px] bg-black text-white px-1.5 py-0.2">#${displayPageNum}</span>
+            <div class="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
+              <button type="button" class="term-btn text-[9px] p-0.5 btn-add-page-preview" title="Full page preview">👁</button>
+              <button type="button" class="term-btn text-[9px] p-0.5 btn-add-page-rot" title="Rotate +90°">↷</button>
+              <button type="button" class="term-btn text-[9px] p-0.5 btn-add-page-del" title="Remove page">✕</button>
+            </div>
+          </div>
+
+          <!-- Canvas Preview -->
+          <div class="relative bg-neutral-50 border border-neutral-300 flex items-center justify-center overflow-hidden my-1 cursor-pointer add-page-thumb-trigger group/thumb w-full" style="min-height: 140px; min-width: 100px;" title="Click for full page preview">
+            <canvas id="add_thumb_${pageItem.id}"></canvas>
+            <div class="absolute inset-0 bg-black/0 group-hover/thumb:bg-black/10 transition-colors flex items-center justify-center pointer-events-none">
+              <span class="opacity-0 group-hover/thumb:opacity-100 bg-black text-white text-[8px] font-mono px-1.5 py-0.5 font-bold shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] flex items-center gap-1">
+                <span>👁</span><span>VIEW</span>
+              </span>
+            </div>
+            ${pageRot ? `<span class="absolute top-1 right-1 bg-black text-white text-[9px] px-1 font-bold">+${pageRot}°</span>` : ''}
+          </div>
+
+          <div class="text-[10px] text-neutral-600 truncate w-full text-center mt-1 font-mono" title="${escapeHtml(pageItem.fileName)} (p.${pageItem.pageNumber})">
+            ${escapeHtml(pageItem.fileName)} (p.${pageItem.pageNumber})
+          </div>
+
+          <!-- In-Between (+) Button mounted on the right edge -->
+          <button type="button" class="card-plus-btn btn-add-insert-divider" style="position: absolute; left: calc(100% + 4px); top: calc(50% - 12px); z-index: 20;" data-insert-index="${index + 1}" title="Insert blank page or PDF after page ${displayPageNum}">
+            +
+          </button>
+
+          ${index === 0 ? `
+            <!-- Leading (+) Button mounted on the left edge for page 1 -->
+            <button type="button" class="card-plus-btn btn-add-insert-divider" style="position: absolute; left: -28px; top: calc(50% - 12px); z-index: 20;" data-insert-index="0" title="Insert blank page or PDF at start">
+              +
+            </button>
+          ` : ''}
+        `;
+      }
+
+      // Checkbox binding
+      pageCard.querySelector('.add-page-checkbox')?.addEventListener('change', (e) => {
+        if (e.target.checked) AppState.addSelectedIds.add(pageItem.id);
+        else AppState.addSelectedIds.delete(pageItem.id);
+        updateAddSelectionCounts();
+      });
+
+      // Preview bindings
+      pageCard.querySelector('.btn-add-page-preview')?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        openAddPagePreview(index);
+      });
+      pageCard.querySelector('.add-page-thumb-trigger')?.addEventListener('click', () => {
+        openAddPagePreview(index);
+      });
+
+      // Rotate single page
+      pageCard.querySelector('.btn-add-page-rot')?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        pageItem.rotation = ((pageItem.rotation || 0) + 90) % 360;
+        renderAddPagesView();
+      });
+
+      // Delete single page
+      pageCard.querySelector('.btn-add-page-del')?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        AppState.addPages.splice(index, 1);
+        AppState.addSelectedIds.delete(pageItem.id);
+        renderAddPagesView();
+        termLog(`Removed page #${displayPageNum}.`);
+      });
+
+      // In-between (+) divider buttons click
+      pageCard.querySelectorAll('.btn-add-insert-divider').forEach((btn) => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const insIdx = parseInt(e.currentTarget.dataset.insertIndex, 10);
+          showAddInlineInsertMenu(e.currentTarget, isNaN(insIdx) ? index + 1 : insIdx);
+        });
+      });
+
+      // Drag and drop reordering
+      setupAddPageCardDrag(pageCard, index, pageItem.id);
+
+      pagesGrid.appendChild(pageCard);
+
+      // Render thumbnail asynchronously for PDF page
+      if (pageItem.type === 'pdfPage') {
+        const canvas = pageCard.querySelector(`#add_thumb_${pageItem.id}`);
+        if (canvas) {
+          renderAddThumbnail(pageItem, canvas);
+        }
+      }
+    });
+
+    // End Add Card in the next grid cell
+    const endAddCard = document.createElement('div');
+    endAddCard.id = 'btnAddPagesEndCard';
+    endAddCard.className = 'page-thumb-card border-2 border-dashed border-black bg-neutral-50 p-2 sm:p-3 flex flex-col items-center justify-center text-center gap-2 cursor-pointer hover:bg-neutral-100 transition-none select-none shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]';
+    endAddCard.style.minHeight = '190px';
+    endAddCard.title = 'Click to insert blank page or PDF at end';
+    endAddCard.innerHTML = `
+      <div class="w-8 h-8 rounded-full border border-black flex items-center justify-center text-lg font-bold bg-white">+</div>
+      <div class="text-xs font-bold font-mono">Insert Blank or PDF</div>
+      <div class="text-[10px] text-neutral-500 font-mono">at the end</div>
+    `;
+    endAddCard.addEventListener('click', (e) => {
+      showAddInlineInsertMenu(e.currentTarget, AppState.addPages.length);
+    });
+    setupDropzone(endAddCard, (files) => {
+      insertAddPdfFiles(files, AppState.addPages.length);
+    });
+    pagesGrid.appendChild(endAddCard);
+  }
+
+  function showAddInlineInsertMenu(anchorEl, insertIndex) {
+    const existing = document.getElementById('addInlineInsertPopover');
+    if (existing) existing.remove();
+
+    const popover = document.createElement('div');
+    popover.id = 'addInlineInsertPopover';
+    popover.className = 'fixed bg-white border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] p-1.5 z-50 flex flex-col gap-1 w-48 font-mono text-xs';
+
+    const rect = anchorEl.getBoundingClientRect();
+    let top = rect.bottom + 6;
+    let left = rect.left + rect.width / 2;
+
+    if (top + 90 > window.innerHeight) {
+      top = Math.max(10, rect.top - 80);
+    }
+    if (left + 105 > window.innerWidth) {
+      left = window.innerWidth - 110;
+    } else if (left - 105 < 0) {
+      left = 110;
+    }
+
+    popover.style.top = `${top}px`;
+    popover.style.left = `${left}px`;
+    popover.style.transform = 'translateX(-50%)';
+
+    popover.innerHTML = `
+      <button type="button" class="term-btn text-[11px] py-1 px-2 text-left w-full justify-start btn-pop-blank hover:bg-black hover:text-white font-bold">
+        + Insert Blank Page
+      </button>
+      <button type="button" class="term-btn text-[11px] py-1 px-2 text-left w-full justify-start btn-pop-pdf hover:bg-black hover:text-white font-bold">
+        + Insert PDF File
+      </button>
+    `;
+
+    popover.querySelector('.btn-pop-blank').addEventListener('click', () => {
+      popover.remove();
+      insertAddBlankPage(insertIndex);
+    });
+
+    popover.querySelector('.btn-pop-pdf').addEventListener('click', () => {
+      popover.remove();
+      AppState._insertAddAtIndex = insertIndex;
+      const input = document.getElementById('addSecFileInput');
+      if (input) input.click();
+    });
+
+    document.body.appendChild(popover);
+
+    const onDocClick = (e) => {
+      if (!popover.contains(e.target) && e.target !== anchorEl) {
+        popover.remove();
+        document.removeEventListener('click', onDocClick);
+      }
+    };
+    setTimeout(() => document.addEventListener('click', onDocClick), 50);
+  }
+
+  function insertAddBlankPage(insertIndex = -1) {
+    let targetW = 595.28;
+    let targetH = 841.89;
+
+    if (AppState.addPages.length > 0) {
+      const refIdx = insertIndex > 0 ? insertIndex - 1 : 0;
+      const refPage = AppState.addPages[refIdx];
+      if (refPage && refPage.width && refPage.height) {
+        targetW = refPage.width;
+        targetH = refPage.height;
+      }
+    }
+
+    const blankItem = {
+      id: 'blank_' + Math.random().toString(36).substr(2, 9),
+      type: 'blankPage',
+      fileId: null,
+      fileName: '[Blank Page]',
+      pageNumber: 1,
+      rotation: 0,
+      width: targetW,
+      height: targetH
+    };
+
+    const finalIdx = (insertIndex >= 0 && insertIndex <= AppState.addPages.length)
+      ? insertIndex
+      : AppState.addPages.length;
+
+    AppState.addPages.splice(finalIdx, 0, blankItem);
+    renderAddPagesView();
+    termLog(`Inserted blank page at position #${finalIdx + 1}.`, 'success');
+  }
+
+  async function insertAddPdfFiles(files, targetIndex = -1) {
+    if (!files || files.length === 0) return;
+    const pdfFiles = Array.from(files).filter((f) => f.type === 'application/pdf' || f.name.toLowerCase().endsWith('.pdf'));
+    if (pdfFiles.length === 0) {
+      termLog('Please select valid PDF file(s).', 'error');
+      return;
+    }
+
+    let insertAt = (targetIndex >= 0 && targetIndex <= AppState.addPages.length)
+      ? targetIndex
+      : (AppState._insertAddAtIndex >= 0 ? AppState._insertAddAtIndex : AppState.addPages.length);
+
+    AppState._insertAddAtIndex = -1;
+
+    for (const file of pdfFiles) {
+      try {
+        termLog(`Loading PDF to insert: ${file.name}...`);
+        const buffer = await file.arrayBuffer();
+        const pdfDoc = await PdfPreview.loadDocument(buffer.slice(0));
+        const fileId = 'add_sec_' + Math.random().toString(36).substr(2, 7);
+
+        const newPages = [];
+        for (let p = 1; p <= pdfDoc.numPages; p++) {
+          newPages.push({
+            id: 'add_p_' + Math.random().toString(36).substr(2, 9),
+            type: 'pdfPage',
+            fileId: fileId,
+            fileName: file.name,
+            buffer: buffer,
+            fileBuffer: buffer,
+            pageNumber: p,
+            pageIndex: p - 1,
+            rotation: 0,
+            pdfDoc: pdfDoc,
+            width: 595.28,
+            height: 841.89
+          });
+        }
+
+        AppState.addPages.splice(insertAt, 0, ...newPages);
+        insertAt += newPages.length;
+        termLog(`Inserted ${newPages.length} page(s) from "${file.name}".`, 'success');
+      } catch (err) {
+        termLog(`Failed to load secondary PDF "${file.name}": ${err.message}`, 'error');
+        alert(`Error inserting PDF "${file.name}": ${err.message}`);
+      }
+    }
+
+    renderAddPagesView();
+  }
+
+  function setupAddPageCardDrag(card, index, pageId) {
+    card.setAttribute('draggable', 'true');
+
+    card.addEventListener('dragstart', (e) => {
+      e.dataTransfer.setData('text/plain', String(index));
+      e.dataTransfer.setData('application/x-page-id', pageId);
+      e.dataTransfer.effectAllowed = 'move';
+      card.classList.add('is-dragging');
+    });
+
+    card.addEventListener('dragend', () => {
+      card.classList.remove('is-dragging');
+      document.querySelectorAll('#addPagesGrid .page-thumb-card').forEach((c) => {
+        c.classList.remove('drag-target-left', 'drag-target-right');
+      });
+    });
+
+    card.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+      const rect = card.getBoundingClientRect();
+      const isLeft = e.clientX < rect.left + rect.width / 2;
+      card.classList.toggle('drag-target-left', isLeft);
+      card.classList.toggle('drag-target-right', !isLeft);
+    });
+
+    card.addEventListener('dragleave', () => {
+      card.classList.remove('drag-target-left', 'drag-target-right');
+    });
+
+    card.addEventListener('drop', (e) => {
+      e.preventDefault();
+      card.classList.remove('drag-target-left', 'drag-target-right');
+      const fromId = e.dataTransfer.getData('application/x-page-id');
+      if (fromId && pageId) {
+        const fromIndex = AppState.addPages.findIndex((p) => p.id === fromId);
+        const toIndex = AppState.addPages.findIndex((p) => p.id === pageId);
+        if (fromIndex !== -1 && toIndex !== -1 && fromIndex !== toIndex) {
+          const [moved] = AppState.addPages.splice(fromIndex, 1);
+          AppState.addPages.splice(toIndex, 0, moved);
+          renderAddPagesView();
+          termLog(`Reorganized page to position #${toIndex + 1}.`);
+          return;
+        }
+      }
+      const fromIndex = parseInt(e.dataTransfer.getData('text/plain'), 10);
+      const toIndex = index;
+      if (!isNaN(fromIndex) && fromIndex !== toIndex && fromIndex >= 0 && fromIndex < AppState.addPages.length) {
+        const [moved] = AppState.addPages.splice(fromIndex, 1);
+        AppState.addPages.splice(toIndex, 0, moved);
+        renderAddPagesView();
+        termLog(`Reorganized page to position #${toIndex + 1}.`);
+      }
+    });
+  }
+
+  function updateAddSelectionCounts() {
+    const totalSelected = AppState.addSelectedIds.size;
+    const selectedEl = document.getElementById('addSelectedCount');
+    const selectAllEl = document.getElementById('addSelectAll');
+
+    if (selectedEl) {
+      selectedEl.textContent = `(${totalSelected} selected)`;
+    }
+
+    if (selectAllEl) {
+      const totalPages = AppState.addPages.length;
+      selectAllEl.checked = totalPages > 0 && totalSelected === totalPages;
+      selectAllEl.indeterminate = totalSelected > 0 && totalSelected < totalPages;
     }
   }
 
-  function updateAddPageNumberDropdowns(totalPages) {
-    const targetInput = document.getElementById('addPageTargetNum');
-    if (targetInput) {
-      targetInput.max = totalPages;
-      targetInput.value = 1;
+  async function renderAddThumbnail(pageItem, canvas) {
+    if (!canvas) return;
+    const maxWidth = 160;
+    const maxHeight = 160;
+    const rotation = pageItem.rotation || 0;
+    const cacheKey = `add_${pageItem.id}_p${pageItem.pageNumber}_r${rotation}`;
+
+    if (AppState.thumbnailCache && AppState.thumbnailCache.has(cacheKey)) {
+      const cached = AppState.thumbnailCache.get(cacheKey);
+      canvas.width = cached.width;
+      canvas.height = cached.height;
+      canvas.style.width = cached.style.width;
+      canvas.style.height = cached.style.height;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(cached, 0, 0);
+      return;
+    }
+
+    PdfPreview.drawFallbackPage(canvas, pageItem.pageNumber, pageItem.fileName, rotation, { maxWidth, maxHeight });
+
+    if (pageItem.pdfDoc) {
+      try {
+        await PdfPreview.renderPageToCanvas(pageItem.pdfDoc, pageItem.pageNumber, canvas, {
+          maxWidth,
+          maxHeight,
+          rotation
+        });
+
+        if (!AppState.thumbnailCache) AppState.thumbnailCache = new Map();
+        const offscreen = document.createElement('canvas');
+        offscreen.width = canvas.width;
+        offscreen.height = canvas.height;
+        offscreen.style.width = canvas.style.width;
+        offscreen.style.height = canvas.style.height;
+        const offCtx = offscreen.getContext('2d');
+        offCtx.drawImage(canvas, 0, 0);
+        AppState.thumbnailCache.set(cacheKey, offscreen);
+      } catch (err) {
+        console.warn('Failed to render add page thumbnail:', err);
+      }
     }
   }
 
-  async function processAddPages() {
-    if (!AppState.addBuffer) {
+  function openAddPagePreview(pageIndex = 0) {
+    if (!AppState.addPages || AppState.addPages.length === 0) return;
+    const clampedIndex = Math.max(0, Math.min(pageIndex, AppState.addPages.length - 1));
+
+    ensurePreviewModalInDOM();
+    PagePreviewModal.isOpen = true;
+    PagePreviewModal.mode = 'addPage';
+    PagePreviewModal.activeFile = null;
+    PagePreviewModal.activeDoc = null;
+    PagePreviewModal.activePageIndex = clampedIndex;
+    PagePreviewModal.totalPages = AppState.addPages.length;
+    PagePreviewModal.zoomScale = 0.75;
+    PagePreviewModal.rotationDelta = 0;
+
+    const modal = document.getElementById('pagePreviewModal');
+    if (modal) modal.classList.remove('hidden');
+    renderFullPreviewContent();
+    termLog(`Opened full preview for page #${clampedIndex + 1} of ${AppState.addPages.length}.`);
+  }
+
+  async function previewAddDoc() {
+    if (!AppState.addPages || AppState.addPages.length === 0) {
       termLog('Please select a primary PDF first.', 'error');
       return;
     }
 
-    const subMode = document.querySelector('input[name="addMode"]:checked')?.value || 'blank';
-    const position = document.getElementById('addPositionSelect')?.value || 'end';
-    const targetPage = parseInt(document.getElementById('addPageTargetNum')?.value || '1', 10);
-
-    const btn = document.getElementById('btnProcessAdd');
+    const btn = document.getElementById('btnPreviewAddDoc');
     if (btn) btn.disabled = true;
+    termLog('Generating full document preview...');
 
     try {
-      let resultBytes;
-      if (subMode === 'blank') {
-        const count = parseInt(document.getElementById('addBlankCount')?.value || '1', 10);
-        const pageSize = document.getElementById('addBlankSizeSelect')?.value || 'A4';
-        const orientation = document.getElementById('addBlankOrientation')?.value || 'portrait';
-
-        termLog(`Inserting ${count} blank page(s) (${pageSize}, ${orientation})...`);
-        resultBytes = await PdfTools.addPages(
-          AppState.addBuffer.slice(0),
-          {
-            type: 'blank',
-            blankCount: count,
-            pageSize: PdfTools.PAGE_SIZES[pageSize] || PdfTools.PAGE_SIZES.A4,
-            orientation: orientation,
-            position: position,
-            targetPage: targetPage
-          },
-          (curr, total, msg) => termLog(msg)
-        );
-      } else {
-        if (!AppState.addSecBuffer) {
-          throw new Error('Please upload a secondary PDF file to insert pages from.');
+      const pageItems = AppState.addPages.map((item) => {
+        if (item.type === 'blankPage') {
+          return {
+            type: 'blankPage',
+            width: item.width || 595.28,
+            height: item.height || 841.89
+          };
         }
+        return {
+          type: 'pdfPage',
+          buffer: item.buffer.slice(0),
+          pageIndex: item.pageNumber - 1,
+          rotation: item.rotation || 0
+        };
+      });
 
-        const rangeStr = document.getElementById('addSecPageRange')?.value.trim();
-        let pagesToInsert = 'all';
-        if (rangeStr) {
-          const parsed = Converters.parsePageRanges(rangeStr, AppState.addSecDoc.numPages);
-          pagesToInsert = Array.from(parsed);
-          if (pagesToInsert.length === 0) {
-            throw new Error('Specified page range from secondary PDF matched 0 pages.');
-          }
-        }
+      const resultBytes = await PdfTools.mergeCustomPages(pageItems, {}, (curr, total, msg) => {
+        termLog(msg);
+      });
 
-        termLog(`Inserting pages from ${AppState.addSecFilename}...`);
-        resultBytes = await PdfTools.addPages(
-          AppState.addBuffer.slice(0),
-          {
-            type: 'pdf',
-            secondaryBuffer: AppState.addSecBuffer.slice(0),
-            secondaryPages: pagesToInsert,
-            position: position,
-            targetPage: targetPage
-          },
-          (curr, total, msg) => termLog(msg)
-        );
-      }
-
-      const baseName = AppState.addFilename.replace(/\.pdf$/i, '');
-      const filename = getCustomFilename('addOutputFilename', `${baseName}_extended.pdf`);
-      const blob = new Blob([resultBytes], { type: 'application/pdf' });
-
-      showResultModal(blob, filename, 'pdf', `Modified Document // Ready for download`);
-      termLog(`Pages added successfully to ${filename}`, 'success');
+      const baseName = (AppState.addFilename || 'document').replace(/\.pdf$/i, '');
+      await openDocumentPreview(resultBytes, `${baseName}_extended_preview.pdf`);
     } catch (e) {
-      termLog(`Add pages error: ${e.message}`, 'error');
-      alert(`Error: ${e.message}`);
+      termLog(`Preview error: ${e.message}`, 'error');
+      alert(`Preview Error: ${e.message}`);
     } finally {
       if (btn) btn.disabled = false;
     }
   }
 
-  async function previewAddDoc() {
-    if (!AppState.addBuffer || !AppState.addDoc) {
+  async function processAddPages() {
+    if (!AppState.addPages || AppState.addPages.length === 0) {
       termLog('Please select a primary PDF first.', 'error');
       return;
     }
 
-    const subMode = document.querySelector('input[name="addMode"]:checked')?.value || 'blank';
-    const position = document.getElementById('addPositionSelect')?.value || 'end';
-    const targetPage = parseInt(document.getElementById('addPageTargetNum')?.value || '1', 10);
-
-    const btn = document.getElementById('btnPreviewAddDoc');
+    const btn = document.getElementById('btnProcessAdd');
     if (btn) btn.disabled = true;
-    termLog('Generating preview with added pages...');
 
     try {
-      let resultBytes;
-      if (subMode === 'blank') {
-        const count = parseInt(document.getElementById('addBlankCount')?.value || '1', 10);
-        const pageSize = document.getElementById('addBlankSizeSelect')?.value || 'A4';
-        const orientation = document.getElementById('addBlankOrientation')?.value || 'portrait';
+      termLog(`Compiling document with ${AppState.addPages.length} total page(s)...`);
 
-        resultBytes = await PdfTools.addPages(
-          AppState.addBuffer.slice(0),
-          {
-            type: 'blank',
-            blankCount: count,
-            pageSize: PdfTools.PAGE_SIZES[pageSize] || PdfTools.PAGE_SIZES.A4,
-            orientation: orientation,
-            position: position,
-            targetPage: targetPage
-          },
-          (curr, total, msg) => termLog(msg)
-        );
-      } else {
-        if (!AppState.addSecBuffer) {
-          throw new Error('Please upload a secondary PDF file to insert pages from.');
+      const pageItems = AppState.addPages.map((item) => {
+        if (item.type === 'blankPage') {
+          return {
+            type: 'blankPage',
+            width: item.width || 595.28,
+            height: item.height || 841.89
+          };
         }
+        return {
+          type: 'pdfPage',
+          buffer: item.buffer.slice(0),
+          pageIndex: item.pageNumber - 1,
+          rotation: item.rotation || 0
+        };
+      });
 
-        const rangeStr = document.getElementById('addSecPageRange')?.value.trim();
-        let pagesToInsert = 'all';
-        if (rangeStr) {
-          const parsed = Converters.parsePageRanges(rangeStr, AppState.addSecDoc.numPages);
-          pagesToInsert = Array.from(parsed);
-          if (pagesToInsert.length === 0) {
-            throw new Error('Specified page range from secondary PDF matched 0 pages.');
-          }
-        }
+      const resultBytes = await PdfTools.mergeCustomPages(pageItems, {}, (curr, total, msg) => {
+        termLog(msg);
+      });
 
-        resultBytes = await PdfTools.addPages(
-          AppState.addBuffer.slice(0),
-          {
-            type: 'pdf',
-            secondaryBuffer: AppState.addSecBuffer.slice(0),
-            secondaryPages: pagesToInsert,
-            position: position,
-            targetPage: targetPage
-          },
-          (curr, total, msg) => termLog(msg)
-        );
-      }
+      const baseName = (AppState.addFilename || 'document').replace(/\.pdf$/i, '');
+      const filename = getCustomFilename('addOutputFilename', `${baseName}_extended.pdf`);
+      const blob = new Blob([resultBytes], { type: 'application/pdf' });
 
-      const baseName = AppState.addFilename.replace(/\.pdf$/i, '');
-      await openDocumentPreview(resultBytes, `${baseName}_preview.pdf`);
+      showResultModal(blob, filename, 'pdf', `${AppState.addPages.length} pages // ${Converters.formatBytes(blob.size)} // Ready for download`);
+      termLog(`Document saved as ${filename} (${AppState.addPages.length} pages).`, 'success');
     } catch (e) {
-      termLog(`Preview error: ${e.message}`, 'error');
-      alert(`Preview Error: ${e.message}`);
+      termLog(`Add pages error: ${e.message}`, 'error');
+      alert(`Error: ${e.message}`);
     } finally {
       if (btn) btn.disabled = false;
     }
@@ -3337,7 +3877,7 @@
 
   function renderImg2PdfList() {
     const container = document.getElementById('img2pdfFileList');
-    const emptyState = document.getElementById('img2pdfEmptyState');
+    const emptyState = document.getElementById('img2pdfDropzone') || document.getElementById('img2pdfEmptyState');
     const btnProcess = document.getElementById('btnProcessImg2Pdf');
     const btnPreview = document.getElementById('btnPreviewImg2PdfDoc');
     const countBadge = document.getElementById('img2pdfCountBadge');
@@ -4389,6 +4929,7 @@
 
       const configSec = document.getElementById('nupConfigSection');
       if (configSec) configSec.classList.remove('hidden');
+      document.getElementById('nupDropzone')?.classList.add('hidden');
       document.getElementById('nUpDropzone')?.classList.add('hidden');
 
       const meta = document.getElementById('nupFileMeta');
@@ -5045,7 +5586,7 @@
 
       // 1. Page Card (Grid Cell)
       const card = document.createElement('div');
-      card.className = `split-page-card bg-white border ${isFirstOfPart && i > 0 ? 'border-2 border-blue-600 shadow-md ring-2 ring-blue-200' : (AppState.splitSelectedPageId === page.id ? 'border-2 border-blue-500 shadow-md ring-2 ring-blue-200' : 'border-neutral-300 hover:border-black')} flex flex-col justify-between w-full select-none group relative transition-all rounded-xs`;
+      card.className = `split-page-card bg-white border-2 ${isFirstOfPart && i > 0 ? 'border-blue-600 shadow-[3px_3px_0px_0px_rgba(37,99,235,1)] ring-2 ring-blue-200' : (AppState.splitSelectedPageId === page.id ? 'border-blue-500 shadow-[3px_3px_0px_0px_rgba(59,130,246,1)] ring-2 ring-blue-200' : 'border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]')} flex flex-col justify-between w-full select-none group relative transition-all`;
       card.dataset.pageId = page.id;
       card.dataset.pageIndex = i;
 
@@ -5604,13 +6145,26 @@
 
       if (targetUrl && (currentPage === 'home' || currentPage !== toolKey)) {
         if (window.FileTransfer) {
+          window.FileTransfer.showLoading(`Moving to ${toolKey.toUpperCase()}...`, filename);
           await window.FileTransfer.setPendingFiles(toolKey, [file]);
         }
         window.location.href = targetUrl;
       } else {
         // Same tool page: reload directly into current workspace
         termLog(`Re-loading ${filename} into current workspace...`);
-        await handleFilesForTool(toolKey, [file]);
+        if (window.FileTransfer) {
+          window.FileTransfer.showLoading(`Loading ${filename} into workspace...`, filename);
+        }
+        hideCurrentToolDropzone(toolKey);
+        try {
+          await handleFilesForTool(toolKey, [file]);
+        } finally {
+          if (window.FileTransfer) {
+            setTimeout(() => {
+              window.FileTransfer.hideLoading();
+            }, 300);
+          }
+        }
       }
     } catch (err) {
       console.error('[DO MORE ERROR]', err);
@@ -5718,7 +6272,7 @@
   // INITIALIZATION AND EVENT BINDINGS
   // ==========================================
   function init() {
-    termLog('System initialized. Anixss-PDFer v1.0.0 is ready.');
+    termLog('System initialized. Anixss-PDFer v2.0.0 is ready.');
     termLog('All file processing is performed client-side inside this browser window.');
 
     // Responsive dynamic resize for live previews on orientation change or window resize
@@ -5780,14 +6334,27 @@
     const currentPage = document.body.dataset.page;
     if (currentPage && currentPage !== 'home') {
       AppState.activeTool = currentPage;
+      if (currentPage === 'organize') {
+        AppState.mergeViewMode = 'pages';
+      }
       activateTool(currentPage);
 
       // Check if any files were queued from homepage
       if (window.FileTransfer) {
-        window.FileTransfer.getPendingFiles(currentPage).then((files) => {
+        window.FileTransfer.getPendingFiles(currentPage).then(async (files) => {
           if (files && files.length > 0) {
             termLog(`Auto-loaded ${files.length} file(s) transferred from homepage.`);
-            handleFilesForTool(currentPage, files);
+            window.FileTransfer.showLoading(`Loading ${files[0].name}...`, 'Preparing workspace');
+            hideCurrentToolDropzone(currentPage);
+            try {
+              await handleFilesForTool(currentPage, files);
+            } finally {
+              setTimeout(() => {
+                window.FileTransfer.hideLoading();
+              }, 250);
+            }
+          } else {
+            showCurrentToolDropzone(currentPage);
           }
         });
       }
@@ -6168,34 +6735,90 @@
       e.target.value = '';
     });
 
-    // Add Pages Mode Toggle (Blank vs PDF)
-    document.querySelectorAll('input[name="addMode"]').forEach((radio) => {
-      radio.addEventListener('change', (e) => {
-        const isBlank = e.target.value === 'blank';
-        document.getElementById('addBlankOptions').classList.toggle('hidden', !isBlank);
-        document.getElementById('addPdfOptions').classList.toggle('hidden', isBlank);
-      });
+    // Add Dropdown Menu in top toolbar
+    const addPagesToggle = document.getElementById('btnAddPagesAddToggle');
+    const addPagesMenu = document.getElementById('addPagesAddMenu');
+    addPagesToggle?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      addPagesMenu?.classList.toggle('hidden');
+    });
+    document.addEventListener('click', (e) => {
+      if (!document.getElementById('addPagesDropdownWrapper')?.contains(e.target)) {
+        addPagesMenu?.classList.add('hidden');
+      }
     });
 
-    // Add Pages Position change (show target page input for before/after)
-    document.getElementById('addPositionSelect')?.addEventListener('change', (e) => {
-      const showTarget = e.target.value === 'before' || e.target.value === 'after';
-      document.getElementById('addTargetPageWrapper').classList.toggle('hidden', !showTarget);
+    document.getElementById('btnAddMenuAddBlank')?.addEventListener('click', () => {
+      addPagesMenu?.classList.add('hidden');
+      insertAddBlankPage(AppState.addPages.length);
     });
 
-    // Secondary PDF upload in Add Pages
-    setupDropzone(document.getElementById('addSecDropzone'), (files) => {
-      const pdf = files.find((f) => f.type === 'application/pdf' || f.name.toLowerCase().endsWith('.pdf'));
-      if (pdf) loadAddSecondaryPdf(pdf);
-    });
-    document.getElementById('btnAddSecSelect')?.addEventListener('click', () => {
+    document.getElementById('btnAddMenuAddPdf')?.addEventListener('click', () => {
+      addPagesMenu?.classList.add('hidden');
+      AppState._insertAddAtIndex = AppState.addPages.length;
       document.getElementById('addSecFileInput')?.click();
     });
+
+    // Secondary file input (for adding PDF files at dividers or end)
     document.getElementById('addSecFileInput')?.addEventListener('change', (e) => {
-      const file = (e.target.files || [])[0];
-      if (file) loadAddSecondaryPdf(file);
+      insertAddPdfFiles(e.target.files);
       e.target.value = '';
     });
+
+    // Batch Rotate & Delete
+    document.getElementById('btnAddRotateCcw')?.addEventListener('click', () => {
+      if (AppState.addSelectedIds.size === 0) {
+        termLog('No pages selected to rotate.', 'warn');
+        return;
+      }
+      AppState.addPages.forEach((p) => {
+        if (AppState.addSelectedIds.has(p.id)) {
+          p.rotation = ((p.rotation || 0) - 90 + 360) % 360;
+        }
+      });
+      renderAddPagesView();
+      termLog(`Rotated ${AppState.addSelectedIds.size} selected page(s) CCW.`);
+    });
+
+    document.getElementById('btnAddRotateCw')?.addEventListener('click', () => {
+      if (AppState.addSelectedIds.size === 0) {
+        termLog('No pages selected to rotate.', 'warn');
+        return;
+      }
+      AppState.addPages.forEach((p) => {
+        if (AppState.addSelectedIds.has(p.id)) {
+          p.rotation = ((p.rotation || 0) + 90) % 360;
+        }
+      });
+      renderAddPagesView();
+      termLog(`Rotated ${AppState.addSelectedIds.size} selected page(s) CW.`);
+    });
+
+    document.getElementById('btnAddDeleteSelected')?.addEventListener('click', () => {
+      const count = AppState.addSelectedIds.size;
+      if (count === 0) {
+        termLog('No pages selected to delete.', 'warn');
+        return;
+      }
+      AppState.addPages = AppState.addPages.filter((p) => !AppState.addSelectedIds.has(p.id));
+      AppState.addSelectedIds.clear();
+      renderAddPagesView();
+      termLog(`Deleted ${count} page(s) from document.`);
+    });
+
+    // Select All
+    document.getElementById('addSelectAll')?.addEventListener('change', (e) => {
+      if (e.target.checked) {
+        AppState.addPages.forEach((p) => AppState.addSelectedIds.add(p.id));
+      } else {
+        AppState.addSelectedIds.clear();
+      }
+      document.querySelectorAll('#addPagesGrid .add-page-checkbox').forEach((cb) => {
+        cb.checked = e.target.checked;
+      });
+      updateAddSelectionCounts();
+    });
+
     document.getElementById('btnPreviewAddDoc')?.addEventListener('click', previewAddDoc);
     document.getElementById('btnProcessAdd')?.addEventListener('click', processAddPages);
 

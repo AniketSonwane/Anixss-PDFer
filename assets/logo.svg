@@ -1,14 +1,52 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 36" fill="none">
-  <!-- Outer Badge / Frame -->
-  <rect x="1.5" y="1.5" width="33" height="33" rx="4" fill="#000000" stroke="#000000" stroke-width="1.5"/>
-  <!-- Layered Page Behind -->
-  <rect x="7" y="5" width="18" height="22" rx="1" fill="#262626" stroke="#404040" stroke-width="1"/>
-  <!-- Front Document Body -->
-  <path d="M10 8 H22 L27 13 V28 H10 Z" fill="#FFFFFF"/>
-  <!-- Pastel Sky Folded Corner -->
-  <path d="M22 8 V13 H27 Z" fill="#BAE6FD"/>
-  <!-- Stylized Monogram "A" + PDF Layer -->
-  <path d="M14 24.5 L18.5 14.5 L23 24.5 H20.7 L19.7 22 H17.3 L16.3 24.5 H14 Z M17.9 20.3 H19.1 L18.5 17.2 Z" fill="#000000"/>
-  <!-- Pastel Rose Accent Bar -->
-  <rect x="10" y="27" width="17" height="2" rx="0.5" fill="#FDA4AF"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" fill="none">
+  <defs>
+    <!-- Vibrant Crimson Accent Gradient -->
+    <linearGradient id="logoRedGrad" x1="15" y1="15" x2="33" y2="33" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#FF4D4D"/>
+      <stop offset="100%" stop-color="#DC2626"/>
+    </linearGradient>
+
+    <!-- Fold Corner Crimson Gradient -->
+    <linearGradient id="logoFoldGrad" x1="27" y1="6.5" x2="37" y2="16.5" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#FF5252"/>
+      <stop offset="100%" stop-color="#B91C1C"/>
+    </linearGradient>
+
+    <!-- Front Paper Gradient -->
+    <linearGradient id="logoPaperGrad" x1="11" y1="6.5" x2="37" y2="40" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#FFFFFF"/>
+      <stop offset="100%" stop-color="#F4F4F6"/>
+    </linearGradient>
+
+    <!-- Drop Shadow for layered paper -->
+    <filter id="logoShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="1.5" stdDeviation="1.5" flood-color="#000000" flood-opacity="0.45"/>
+    </filter>
+  </defs>
+
+  <!-- Back Layered Document Sheet (Depth & Manipulation cue) -->
+  <g transform="rotate(-6 24 23.5)">
+    <rect x="13" y="6.5" width="22" height="32" rx="2.5" fill="#222226" stroke="#52525B" stroke-width="1"/>
+  </g>
+
+  <!-- Front Document Sheet with Crisp 45-degree Fold -->
+  <g filter="url(#logoShadow)">
+    <path d="M 11,8.8 A 2.5,2.5 0 0,1 13.5,6.5 L 27,6.5 L 37,16.5 L 37,37.5 A 2.5,2.5 0 0,1 34.5,40 L 13.5,40 A 2.5,2.5 0 0,1 11,37.5 Z" 
+          fill="url(#logoPaperGrad)" stroke="#E4E4E7" stroke-width="0.5"/>
+
+    <!-- Folded Corner Flap with smooth inner arc -->
+    <path d="M 27,6.5 L 27,14 A 2.5,2.5 0 0,0 29.5,16.5 L 37,16.5 Z" fill="url(#logoFoldGrad)"/>
+    <path d="M 27,16.5 L 37,16.5" stroke="#991B1B" stroke-width="0.6" stroke-linecap="round"/>
+  </g>
+
+  <!-- Monogram A Icon Centered on Document -->
+  <g>
+    <!-- Main A Body (Solid Geometric Vector) -->
+    <path d="M 22.6,13.5 L 25.4,13.5 L 32.8,35.5 L 29.0,35.5 L 26.9,29 L 21.1,29 L 19.0,35.5 L 15.2,35.5 Z 
+             M 24,18.5 L 26.0,26 L 22.0,26 Z" 
+          fill="#09090B" fill-rule="evenodd"/>
+
+    <!-- Signature Crimson Accent Crossbar -->
+    <rect x="17.2" y="26.3" width="13.6" height="2.8" rx="1.4" fill="url(#logoRedGrad)"/>
+  </g>
 </svg>

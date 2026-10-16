@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Organize PDF Pages Online — Drag & Drop Page Reorder | Anixss-PDFer</title>
+  <meta name="description" content="Visual drag-and-drop PDF page organizer. Reorder, rotate, delete, or add pages in your PDF document with live visual thumbnails directly in your browser.">
+  <meta name="keywords" content="organize pdf, reorder pdf pages, rearrange pdf pages, drag and drop pdf pages, delete pdf pages, rotate pdf pages">
+  <meta name="author" content="Anixss-PDFer">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://anixss-pdfer.com/organize-pages.html">
+  <link rel="icon" type="image/svg+xml" href="./assets/favicon.svg?v=3">
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://anixss-pdfer.com/organize-pages.html">
+  <meta property="og:title" content="Organize PDF Pages Online — Drag & Drop Page Reorder | Anixss-PDFer">
+  <meta property="og:description" content="Visual drag-and-drop PDF page organizer. Reorder, rotate, delete, or add pages in your PDF document with live visual thumbnails directly in your browser.">
+  <meta property="og:image" content="https://anixss-pdfer.com/assets/logo.svg">
+  <meta property="og:site_name" content="Anixss-PDFer">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:url" content="https://anixss-pdfer.com/organize-pages.html">
+  <meta name="twitter:title" content="Organize PDF Pages Online — Drag & Drop Page Reorder | Anixss-PDFer">
+  <meta name="twitter:description" content="Visual drag-and-drop PDF page organizer. Reorder, rotate, delete, or add pages in your PDF document with live visual thumbnails directly in your browser.">
+  <meta name="twitter:image" content="https://anixss-pdfer.com/assets/logo.svg">
+
+  <!-- JSON-LD Structured Data Schema -->
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Organize PDF Pages Online",
+  "url": "https://anixss-pdfer.com/organize-pages.html",
+  "description": "Visual drag-and-drop PDF page organizer. Reorder, rotate, delete, or add pages in your PDF document with live visual thumbnails directly in your browser.",
+  "applicationCategory": "UtilitiesApplication",
+  "operatingSystem": "Any",
+  "browserRequirements": "Requires JavaScript. Requires HTML5.",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  }
+}
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            mono: ['"JetBrains Mono"', '"IBM Plex Mono"', 'Menlo', 'Consolas', 'monospace'],
+            sans: ['"JetBrains Mono"', '"IBM Plex Mono"', 'Menlo', 'Consolas', 'monospace']
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Custom Terminal Stylesheet -->
+  <link rel="stylesheet" href="src/output.css?v=12">
+
+  <!-- Core PDF Libraries -->
+  <script src="./assets/vendor/pdf-lib.min.js"></script>
+  <script>
+    if (!window.PDFLib) {
+      document.write('<script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"><\/script>');
+    }
+  </script>
+
+  <script src="./assets/vendor/pdf.min.js"></script>
+  <script>
+    if (!window.pdfjsLib) {
+      document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"><\/script>');
+    }
+  </script>
+
+  <script src="./assets/vendor/jszip.min.js"></script>
+  <script>
+    if (!window.JSZip) {
+      document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"><\/script>');
+    }
+  </script>
+</head>
+<body class="bg-white text-black font-mono flex flex-col min-h-screen antialiased selection:bg-black selection:text-white" data-page="organize">
+
+  <!-- HEADER -->
+  <header class="border-b border-black sticky top-0 bg-white z-40">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex flex-wrap items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <a href="index.html" id="navBrand" class="flex items-center gap-2.5 group select-none text-black hover:opacity-90 transition-opacity" title="Anixss-PDFer Home">
+          <div class="w-8 h-8 sm:w-9 sm:h-9 bg-black rounded flex items-center justify-center p-1 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] group-hover:translate-x-0.5 group-hover:translate-y-0.5 group-hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] transition-all">
+            <img src="./assets/logo.svg" alt="Anixss-PDFer" class="w-full h-full object-contain" />
+          </div>
+          <div class="flex items-center gap-1.5">
+            <span class="text-lg sm:text-xl font-extrabold tracking-tight text-black font-mono">Anixss<span class="text-neutral-400 font-normal">-</span>PDFer</span>
+            <span class="text-[10px] font-mono border border-black px-1.5 py-0.5 bg-black text-white font-bold tracking-wider">v2.0</span>
+          </div>
+        </a>
+      </div>
+
+      <nav class="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm font-bold">
+        <a href="index.html" class="px-2.5 py-1 border border-transparent hover:border-black hover:bg-black hover:text-white transition-none">HOME</a>
+        <a href="about.html" class="px-2.5 py-1 border border-transparent hover:border-black hover:bg-black hover:text-white transition-none">ABOUT</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- MAIN WORKSPACE -->
+  <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 py-6 sm:py-8 space-y-6">
+
+    <!-- Workspace Top Toolbar -->
+    <div class="border-b border-black pb-4 flex flex-wrap items-center justify-between gap-3">
+      <div class="flex items-center gap-3">
+        <a href="index.html" class="term-btn text-xs py-1.5 px-3">
+          ← ALL TOOLS
+        </a>
+        <div>
+          <h1 class="text-lg sm:text-xl font-bold tracking-tight">ORGANIZE PAGES</h1>
+        </div>
+      </div>
+      <div class="flex items-center gap-2 flex-wrap">
+        <button type="button" id="btnClearTool" class="term-btn text-xs py-1.5 px-3">
+          RESET
+        </button>
+      </div>
+    </div>
+
+    <!-- ORGANIZE PANEL (Uses same drag-and-drop workspace as Merge) -->
+    <div id="panel_merge" class="space-y-4">
+      <!-- TOP COMMAND TOOLBAR -->
+      <div class="border border-black bg-white p-2 sm:p-2.5 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2 sm:gap-3 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] min-w-0 w-full">
+        
+        <!-- Left: Segmented Mode Pill & Tool Buttons -->
+        <div class="flex items-center gap-1.5 sm:gap-2 flex-wrap min-w-0">
+          
+          <!-- View Mode Segmented Switcher (Pages default for Organize) -->
+          <div class="inline-flex border border-black p-0.5 bg-neutral-100 flex-shrink-0">
+            <button type="button" id="btnMergeTabPages" class="px-2 sm:px-3 py-1 text-xs font-bold font-mono flex items-center gap-1.5 bg-black text-white transition-none" title="Organize individual pages by dragging">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
+              <span>Pages</span>
+            </button>
+            <button type="button" id="btnMergeTabFiles" class="px-2 sm:px-3 py-1 text-xs font-bold font-mono flex items-center gap-1.5 text-black hover:bg-neutral-200 transition-none" title="View multi-page document stacks">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+              <span>Files</span>
+            </button>
+          </div>
+
+          <div class="h-5 w-[1px] bg-neutral-300 hidden sm:block flex-shrink-0"></div>
+
+          <!-- Add Dropdown -->
+          <div class="relative inline-block text-left flex-shrink-0" id="mergeAddDropdownWrapper">
+            <button type="button" id="btnMergeAddToggle" class="term-btn text-xs py-1 px-2.5 flex items-center gap-1 shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] font-bold">
+              <span>(+) Add</span>
+              <span class="text-[9px]">▼</span>
+            </button>
+            <div id="mergeAddMenu" class="hidden absolute left-0 mt-1 w-48 bg-white border border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] z-30">
+              <button type="button" id="btnMenuAddPdfs" class="w-full text-left px-3 py-2 text-xs font-mono font-bold hover:bg-black hover:text-white border-b border-neutral-200 block">
+                + Add PDF Files
+              </button>
+              <button type="button" id="btnMenuAddImages" class="w-full text-left px-3 py-2 text-xs font-mono font-bold hover:bg-black hover:text-white border-b border-neutral-200 block">
+                + Add Images (JPG/PNG)
+              </button>
+              <button type="button" id="btnMenuAddBlank" class="w-full text-left px-3 py-2 text-xs font-mono font-bold hover:bg-black hover:text-white block">
+                + Add Blank Page
+              </button>
+            </div>
+            <input type="file" id="mergeFileInput" multiple accept=".pdf" class="hidden" />
+            <input type="file" id="mergeImgInput" multiple accept="image/jpeg,image/png,image/webp" class="hidden" />
+          </div>
+
+          <!-- Action Icons (Rotate, Delete) -->
+          <div class="flex items-center gap-1 flex-shrink-0">
+            <button type="button" id="btnMergeRotateCcw" class="term-btn text-xs py-1 px-2 shadow-[1px_1px_0px_0px_rgba(0,0,0,1)]" title="Rotate Selected -90° (Counter-Clockwise)"><span class="text-indigo-500">↶</span></button>
+            <button type="button" id="btnMergeRotateCw" class="term-btn text-xs py-1 px-2 shadow-[1px_1px_0px_0px_rgba(0,0,0,1)]" title="Rotate Selected +90° (Clockwise)"><span class="text-indigo-500">↷</span></button>
+            <button type="button" id="btnMergeDeleteSelected" class="term-btn text-xs py-1 px-2 text-neutral-800 hover:bg-black hover:text-white shadow-[1px_1px_0px_0px_rgba(0,0,0,1)]" title="Delete Selected"><span class="text-rose-500">🗑</span></button>
+          </div>
+
+        </div>
+
+        <!-- Right: Preview Combined Document & Finish Button -->
+        <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-1.5 sm:gap-2.5 w-full sm:w-auto flex-shrink-0">
+          <!-- RENAME FILE BEFORE EXPORT -->
+          <div class="flex items-center border border-black bg-white px-2 py-1 text-xs font-mono w-full sm:w-auto">
+            <label for="mergeOutputFilename" class="text-neutral-500 font-bold uppercase flex items-center gap-1 select-none whitespace-nowrap mr-1">
+              <span class="w-4 h-4 rounded-xs bg-amber-100 text-amber-800 flex items-center justify-center text-[10px] flex-shrink-0">✏️</span>
+              <span class="hidden md:inline">NAME:</span>
+            </label>
+            <input type="text" id="mergeOutputFilename" class="font-mono font-bold text-black bg-transparent border-none outline-none flex-1 min-w-0 sm:w-28 md:w-36 placeholder-neutral-400 truncate" value="anixss_organized" placeholder="output_name" title="Rename output file before exporting" />
+            <span class="text-neutral-500 font-bold select-none whitespace-nowrap">.pdf</span>
+          </div>
+
+          <!-- Action Buttons: Preview & Finish -->
+          <div class="flex items-center gap-1.5 sm:gap-2 w-full sm:w-auto">
+            <button type="button" id="btnPreviewMergedDoc" class="term-btn text-xs py-1.5 px-2.5 sm:px-3 font-bold flex items-center justify-center gap-1 hover:bg-black hover:text-white transition-none uppercase font-mono tracking-wider flex-1 sm:flex-initial whitespace-nowrap shadow-[1px_1px_0px_0px_rgba(0,0,0,1)]" disabled title="Preview Combined Output Document">
+              <span class="text-sky-500">👁</span>
+              <span class="hidden sm:inline">PREVIEW DOCUMENT</span>
+              <span class="sm:hidden text-[11px]">PREVIEW</span>
+            </button>
+            <button type="button" id="btnProcessMerge" class="term-btn term-btn-primary text-xs py-1.5 px-4 sm:px-6 font-bold flex items-center justify-center gap-1.5 uppercase font-mono tracking-wider flex-1 sm:flex-initial whitespace-nowrap shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]" disabled>
+              <span>FINISH</span>
+              <span>→</span>
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- SUB-TOOLBAR: Select all, Blank page rule, Sort, Layout -->
+      <div class="border border-black bg-neutral-50 px-3.5 py-2.5 flex flex-wrap items-center justify-between gap-3 text-xs font-mono shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+        
+        <!-- Left: Select all -->
+        <div class="flex items-center gap-2 flex-wrap">
+          <label class="flex items-center gap-2 cursor-pointer select-none font-bold">
+            <input type="checkbox" id="mergeSelectAll" class="w-4 h-4 accent-black cursor-pointer" />
+            <span>Select all</span>
+          </label>
+          <span id="mergeSelectedCount" class="text-neutral-500 font-normal">(0 selected)</span>
+        </div>
+
+        <!-- Right: Sort & Grid View Switch -->
+        <div class="flex items-center gap-3">
+          <button type="button" id="btnMergeSortToggle" class="border border-black bg-white px-2.5 py-1 text-xs font-bold hover:bg-black hover:text-white flex items-center gap-1 transition-none shadow-[1px_1px_0px_0px_rgba(0,0,0,1)]" title="Sort Alphabetically">
+            <span id="mergeSortLabel">⇅ A-Z</span>
+          </button>
+
+          <div class="h-4 w-[1px] bg-neutral-300"></div>
+
+          <div class="flex items-center gap-1">
+            <button type="button" id="btnMergeLayoutGrid" class="p-1 border border-black bg-black text-white shadow-[1px_1px_0px_0px_rgba(0,0,0,1)]" title="Grid View">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
+            </button>
+            <button type="button" id="btnMergeLayoutList" class="p-1 border border-transparent hover:border-black" title="List View">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/></svg>
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- MAIN CARDS CANVAS AREA -->
+      <div id="mergeCanvasArea" class="space-y-4">
+        
+        <!-- Empty Dropzone State -->
+        <div id="mergeEmptyState" class="term-dropzone p-8 sm:p-12 text-center flex flex-col items-center justify-center gap-3 cursor-pointer shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]">
+          <div class="border border-black p-3 bg-sky-50 text-sky-600 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+            <svg class="w-8 h-8 stroke-current" fill="none" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+            </svg>
+          </div>
+          <div class="space-y-1">
+            <div class="text-base sm:text-lg font-bold tracking-wider">[ DROP PDF FILE HERE TO ORGANIZE PAGES ]</div>
+            <div class="text-xs text-neutral-600">DRAG &amp; DROP PAGES TO REARRANGE, ROTATE, OR REMOVE</div>
+          </div>
+          <button type="button" id="btnMergeSelectInitial" class="term-btn term-btn-primary px-6 py-2 text-xs font-bold mt-2 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+            SELECT PDF FILE
+          </button>
+        </div>
+
+        <!-- VIEW 1: PAGES MODE (Individual Page Cards with Drag & Drop Reorganization) -->
+        <div id="mergePagesContainer" class="space-y-3">
+          <div class="flex items-center justify-between text-xs font-mono text-neutral-600 bg-neutral-50 p-2 border border-black">
+            <span id="mergePagesSummaryBadge" class="font-bold text-black ml-auto">0 PAGES</span>
+          </div>
+          <div id="mergePagesGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 py-2">
+            <!-- Dynamic Page Thumbnail Cards will be rendered here with drag & drop -->
+          </div>
+        </div>
+
+        <!-- VIEW 2: FILES MODE (Stacked Paper Cards) -->
+        <div id="mergeFilesContainer" class="hidden">
+          <div id="mergeFilesGrid" class="flex flex-wrap items-center gap-4 py-4 min-h-[260px]">
+            <!-- Dynamic File Cards will be inserted here -->
+          </div>
+        </div>
+
+        <!-- VIEW 3: LIST VIEW -->
+        <div id="mergeListContainer" class="hidden space-y-2">
+          <div id="mergeFileListTable" class="border border-black divide-y divide-black bg-white"></div>
+        </div>
+
+      </div>
+
+      <!-- FOOTER SUMMARY & CONTROLS -->
+      <div class="border-t border-black pt-4 flex flex-wrap items-center justify-between gap-3 text-xs font-mono">
+        <div class="flex items-center gap-3">
+          <span class="font-bold" id="mergeSummaryText">OUTPUT: 0 FILES // 0 PAGES</span>
+        </div>
+        <div class="flex items-center gap-2 flex-wrap">
+          <button type="button" id="btnMergeClearAll" class="term-btn text-xs py-1 px-3">
+            [ CLEAR ALL ]
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- FULL PAGE PREVIEW MODAL / LIGHTBOX -->
+  <div id="pagePreviewModal" class="fixed inset-0 bg-black/80 z-[100] flex items-center justify-center p-2 sm:p-4 hidden backdrop-blur-[1px]" style="z-index: 100;">
+    <div class="bg-white border-2 border-black max-w-5xl w-full h-[94vh] flex flex-col shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+      
+      <!-- Modal Header -->
+      <div class="bg-black text-white px-3 sm:px-4 py-2.5 flex items-center justify-between gap-3 text-xs font-mono font-bold select-none border-b border-black">
+        <div class="flex items-center gap-2 truncate">
+          <span class="text-neutral-400 hidden sm:inline">PREVIEW:</span>
+          <span id="previewModalTitle" class="truncate text-white max-w-[120px] sm:max-w-md text-[11px] sm:text-xs">document.pdf</span>
+          <span id="previewModalBadge" class="bg-white text-black px-1.5 py-0.2 text-[10px]">PAGE 1 / 1</span>
+        </div>
+        
+        <!-- Controls: Zoom, Rotate, Close -->
+        <div class="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
+          <button type="button" id="btnPreviewZoomOut" class="term-btn text-xs py-0.5 px-2 bg-neutral-800 text-white border-neutral-700 hover:bg-white hover:text-black" title="Zoom Out (-)">-</button>
+          <span id="previewZoomLevel" class="text-[11px] text-neutral-300 w-11 text-center font-mono">75%</span>
+          <button type="button" id="btnPreviewZoomIn" class="term-btn text-xs py-0.5 px-2 bg-neutral-800 text-white border-neutral-700 hover:bg-white hover:text-black" title="Zoom In (+)">+</button>
+          <button type="button" id="btnPreviewZoomFit" class="term-btn text-xs py-0.5 px-2 bg-neutral-800 text-white border-neutral-700 hover:bg-white hover:text-black hidden sm:inline-block" title="Fit to Screen">FIT</button>
+          
+          <div class="h-4 w-[1px] bg-neutral-700 mx-1"></div>
+          
+          <button type="button" id="btnPreviewRotateCcw" class="term-btn text-xs py-0.5 px-2 bg-neutral-800 text-white border-neutral-700 hover:bg-white hover:text-black" title="Rotate CCW (↶)"><span class="text-indigo-500">↶</span></button>
+          <button type="button" id="btnPreviewRotateCw" class="term-btn text-xs py-0.5 px-2 bg-neutral-800 text-white border-neutral-700 hover:bg-white hover:text-black" title="Rotate CW (↷)"><span class="text-indigo-500">↷</span></button>
+          
+          <div class="h-4 w-[1px] bg-neutral-700 mx-1"></div>
+          
+          <button type="button" id="btnClosePagePreview" class="term-btn text-xs py-0.5 px-2 sm:px-2.5 bg-neutral-800 text-white border-neutral-700 hover:bg-white hover:text-black" title="Close (ESC)">✕<span class="hidden sm:inline"> CLOSE</span></button>
+        </div>
+      </div>
+
+      <!-- Canvas Viewport with Scroll / Zoom -->
+      <div id="previewCanvasContainer" class="flex-1 overflow-auto bg-neutral-200 p-4 flex items-center justify-center relative select-none">
+        <canvas id="previewFullCanvas" class="bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] border border-black max-w-none transition-transform"></canvas>
+        <div id="previewLoadingSpinner" class="hidden absolute inset-0 bg-white/80 flex items-center justify-center font-mono text-xs font-bold gap-2">
+          <span class="status-pulse"></span>
+          <span>LOADING HIGH-RES PREVIEW...</span>
+        </div>
+      </div>
+
+      <!-- Modal Footer Toolbar: Prev / Next Navigation -->
+      <div class="bg-neutral-50 border-t border-black px-4 py-2 flex items-center justify-between text-xs font-mono">
+        <button type="button" id="btnPreviewPrevPage" class="term-btn py-1 px-3 flex items-center gap-1.5" title="Previous Page (Left Arrow)">
+          <span>←</span>
+          <span>PREVIOUS</span>
+        </button>
+
+        <div class="flex items-center gap-2 flex-wrap">
+          <span id="previewPageIndicator" class="font-bold">PAGE 1 OF 1</span>
+          <span class="text-neutral-400 hidden sm:inline">|</span>
+          <span class="text-neutral-500 hidden sm:inline text-[11px]">[USE ← / → KEYS TO NAVIGATE]</span>
+        </div>
+
+        <button type="button" id="btnPreviewNextPage" class="term-btn py-1 px-3 flex items-center gap-1.5" title="Next Page (Right Arrow)">
+          <span>NEXT</span>
+          <span>→</span>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- RESULT MODAL -->
+  <div id="resultModal" class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-3 sm:p-4 hidden">
+    <div class="bg-white border-2 border-black max-w-xl w-full p-3.5 sm:p-6 space-y-3 sm:space-y-4 shadow-none max-h-[92vh] overflow-y-auto select-none">
+      <div class="flex items-center justify-between border-b border-black pb-3">
+        <div class="flex items-center gap-2 flex-wrap">
+          <span class="status-pulse"></span>
+          <span class="text-xs font-bold uppercase tracking-wider text-slate-800">Processing Complete</span>
+        </div>
+        <button type="button" id="btnCloseResult" class="text-slate-400 hover:text-slate-800 text-sm font-semibold p-1 hover:bg-slate-100 rounded-lg transition-colors" aria-label="Close">✕</button>
+      </div>
+
+      <!-- GENERATED OUTPUT WITH INLINE RENAME OPTION -->
+      <div class="space-y-2 border border-black p-3.5 bg-neutral-50 font-mono">
+        <div class="flex items-center justify-between text-[10px] font-bold uppercase text-neutral-600">
+          <label for="resultFilenameInput" class="flex items-center gap-1.5 text-black">
+            <span class="w-4 h-4 rounded-xs bg-amber-100 text-amber-800 flex items-center justify-center text-[10px] flex-shrink-0">✏️</span>
+            <span>FILE NAME:</span>
+          </label>
+        </div>
+        <div class="flex items-stretch border border-black bg-white focus-within:bg-yellow-50/50">
+          <input type="text" id="resultFilenameInput" class="w-full text-xs sm:text-sm font-bold p-2 bg-transparent border-none outline-none font-mono focus:outline-none" placeholder="Enter file name..." />
+          <span id="resultFileExtSuffix" class="text-xs sm:text-sm font-mono font-bold text-neutral-500 bg-neutral-100 px-3 py-2 border-l border-black select-none flex-shrink-0 flex items-center justify-center">.pdf</span>
+        </div>
+        <div id="resultTitle" class="hidden">output.pdf</div>
+        <div id="resultMeta" class="text-xs text-neutral-700 font-mono">Ready for download</div>
+      </div>
+
+      <!-- DUAL ACTION CARDS: OPTION 1 (DOWNLOAD) & OPTION 2 (DO MORE) -->
+      <div id="resultPrimaryActions" class="grid grid-cols-1 sm:grid-cols-2 gap-3.5 pt-1 w-full">
+        <!-- OPTION 1: DOWNLOAD -->
+        <div id="resultDownloadCard" class="border border-slate-200 p-4 bg-white rounded-xl shadow-xs hover:shadow-md hover:border-slate-300 transition-all flex flex-col justify-between gap-3">
+          <div>
+            <div class="text-[11px] font-semibold text-slate-500 uppercase tracking-wide">Save File</div>
+            <div class="text-xs text-slate-800 font-medium mt-0.5">Download directly to device</div>
+          </div>
+          <button type="button" id="btnDownloadResult" class="term-btn term-btn-primary w-full py-2.5 px-3 text-xs font-bold rounded-lg tracking-wider flex items-center justify-center gap-2">
+            <span class="w-5 h-5 rounded bg-emerald-100 text-emerald-800 flex items-center justify-center text-xs flex-shrink-0">💾</span>
+            <span>Download PDF</span>
+          </button>
+        </div>
+
+        <!-- OPTION 2: DO MORE -->
+        <div id="resultDoMoreCard" class="border border-blue-200 bg-gradient-to-b from-blue-50/80 to-white p-4 rounded-xl shadow-xs hover:shadow-md hover:border-blue-300 transition-all flex flex-col justify-between gap-3">
+          <div>
+            <div class="text-[11px] font-semibold text-blue-700 uppercase tracking-wide flex items-center justify-between">
+              <span>Next Step</span>
+            </div>
+            <div class="text-xs text-slate-700 font-medium mt-0.5">Continue editing in another tool</div>
+          </div>
+          <button type="button" id="btnDoMoreToggle" onclick="event.stopPropagation(); window.toggleDoMorePanel ? window.toggleDoMorePanel() : (function(p){if(!p)return; const isH=p.classList.contains('hidden')||p.style.display==='none'; p.classList.toggle('hidden',!isH); p.style.display=isH?'block':'none';})(document.getElementById('doMorePanel'))" class="term-btn w-full py-2.5 px-3 text-xs font-bold rounded-lg tracking-wider bg-slate-900 hover:bg-slate-800 text-white flex items-center justify-center gap-2">
+            <span class="w-5 h-5 rounded bg-amber-100 text-amber-800 flex items-center justify-center text-xs flex-shrink-0">⚡</span>
+            <span>Do More →</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- EXPANDABLE "DO MORE" TOOL SELECTOR PANEL -->
+      <div id="doMorePanel" class="border border-slate-200 p-4 bg-slate-50/60 rounded-xl space-y-3.5 w-full hidden">
+        <div class="flex items-center justify-between border-b border-slate-200/80 pb-2.5 text-xs font-semibold">
+          <span class="text-blue-700 flex items-center gap-1.5 font-bold">
+            <span>⚡</span>
+            <span>Choose Next Tool (No Re-upload Needed)</span>
+          </span>
+          <button type="button" id="btnCloseDoMorePanel" onclick="event.stopPropagation(); window.toggleDoMorePanel ? window.toggleDoMorePanel(false) : (function(p){if(!p)return; p.classList.add('hidden'); p.style.display='none';})(document.getElementById('doMorePanel'))" class="text-slate-400 hover:text-slate-700 text-[11px] font-bold px-2 py-0.5 rounded hover:bg-slate-200/60 transition-colors">
+            Hide
+          </button>
+        </div>
+
+        <!-- Tool Grid -->
+        <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5 text-xs">
+          <button type="button" class="btn-do-more-action p-2.5 rounded-xl border border-slate-200 bg-white hover:border-slate-400 hover:shadow-sm flex items-center gap-2.5 text-left transition-all group" data-tool="page-numbers" onclick="event.stopPropagation(); window.doMoreWithResult ? window.doMoreWithResult('page-numbers') : (window.PdfApp ? window.PdfApp.doMoreWithResult('page-numbers') : null)">
+            <span class="w-7 h-7 rounded bg-indigo-100 text-indigo-700 flex items-center justify-center text-sm border border-indigo-200 flex-shrink-0">🔢</span>
+            <div class="overflow-hidden">
+              <div class="font-bold text-slate-900 group-hover:text-blue-600 transition-colors">Page Numbers</div>
+              <div class="text-[10px] text-slate-500 truncate">Headers &amp; footers</div>
+            </div>
+          </button>
+
+          <button type="button" class="btn-do-more-action p-2.5 rounded-xl border border-slate-200 bg-white hover:border-slate-400 hover:shadow-sm flex items-center gap-2.5 text-left transition-all group" data-tool="watermark" onclick="event.stopPropagation(); window.doMoreWithResult ? window.doMoreWithResult('watermark') : (window.PdfApp ? window.PdfApp.doMoreWithResult('watermark') : null)">
+            <span class="w-7 h-7 rounded bg-teal-100 text-teal-700 flex items-center justify-center text-sm border border-teal-200 flex-shrink-0">💧</span>
+            <div class="overflow-hidden">
+              <div class="font-bold text-slate-900 group-hover:text-blue-600 transition-colors">Watermark</div>
+              <div class="text-[10px] text-slate-500 truncate">Text or logo stamp</div>
+            </div>
+          </button>
+
+          <button type="button" class="btn-do-more-action p-2.5 rounded-xl border border-slate-200 bg-white hover:border-slate-400 hover:shadow-sm flex items-center gap-2.5 text-left transition-all group" data-tool="redact" onclick="event.stopPropagation(); window.doMoreWithResult ? window.doMoreWithResult('redact') : (window.PdfApp ? window.PdfApp.doMoreWithResult('redact') : null)">
+            <span class="w-7 h-7 rounded bg-pink-100 text-pink-700 flex items-center justify-center text-sm border border-pink-200 flex-shrink-0">⬛</span>
+            <div class="overflow-hidden">
+              <div class="font-bold text-slate-900 group-hover:text-blue-600 transition-colors">Hide Content</div>
+              <div class="text-[10px] text-slate-500 truncate">Blackout / redact</div>
+            </div>
+          </button>
+
+          <button type="button" class="btn-do-more-action p-2.5 rounded-xl border border-slate-200 bg-white hover:border-slate-400 hover:shadow-sm flex items-center gap-2.5 text-left transition-all group" data-tool="split" onclick="event.stopPropagation(); window.doMoreWithResult ? window.doMoreWithResult('split') : (window.PdfApp ? window.PdfApp.doMoreWithResult('split') : null)">
+            <span class="w-7 h-7 rounded bg-rose-100 text-rose-700 flex items-center justify-center text-sm border border-rose-200 flex-shrink-0">✂️</span>
+            <div class="overflow-hidden">
+              <div class="font-bold text-slate-900 group-hover:text-blue-600 transition-colors">Split PDF</div>
+              <div class="text-[10px] text-slate-500 truncate">Visual scissor cuts</div>
+            </div>
+          </button>
+
+          <button type="button" class="btn-do-more-action p-2.5 rounded-xl border border-slate-200 bg-white hover:border-slate-400 hover:shadow-sm flex items-center gap-2.5 text-left transition-all group" data-tool="resize" onclick="event.stopPropagation(); window.doMoreWithResult ? window.doMoreWithResult('resize') : (window.PdfApp ? window.PdfApp.doMoreWithResult('resize') : null)">
+            <span class="w-7 h-7 rounded bg-amber-100 text-amber-800 flex items-center justify-center text-sm border border-amber-200 flex-shrink-0">📐</span>
+            <div class="overflow-hidden">
+              <div class="font-bold text-slate-900 group-hover:text-blue-600 transition-colors">Resize PDF</div>
+              <div class="text-[10px] text-slate-500 truncate">A4, Letter, scale</div>
+            </div>
+          </button>
+
+          <button type="button" class="btn-do-more-action p-2.5 rounded-xl border border-slate-200 bg-white hover:border-slate-400 hover:shadow-sm flex items-center gap-2.5 text-left transition-all group" data-tool="rotate" onclick="event.stopPropagation(); window.doMoreWithResult ? window.doMoreWithResult('rotate') : (window.PdfApp ? window.PdfApp.doMoreWithResult('rotate') : null)">
+            <span class="w-7 h-7 rounded bg-purple-100 text-purple-700 flex items-center justify-center text-sm border border-purple-200 flex-shrink-0">🔄</span>
+            <div class="overflow-hidden">
+              <div class="font-bold text-slate-900 group-hover:text-blue-600 transition-colors">Rotate PDF</div>
+              <div class="text-[10px] text-slate-500 truncate">90°, 180°, 270°</div>
+            </div>
+          </button>
+        </div>
+      </div>
+
+      <!-- BOTTOM ACTION -->
+      <div class="flex items-center justify-end gap-2 pt-2 border-t border-black">
+        <button type="button" id="btnPreviewResult" class="term-btn text-xs py-2 px-3 hover:bg-black hover:text-white flex items-center gap-1.5 shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] font-mono font-bold">
+          <span class="text-sky-500">👁</span>
+          <span>PREVIEW RESULT</span>
+        </button>
+        <button type="button" id="btnStartNew" class="term-btn text-xs py-2 px-4 hover:bg-black hover:text-white flex items-center gap-1 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+          <span>START OVER</span>
+          <span>↻</span>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="border-t border-black bg-white mt-auto">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex flex-col sm:flex-row items-center justify-center gap-3 text-xs">
+      <div class="flex items-center gap-2.5">
+        <div class="w-5 h-5 bg-black rounded flex items-center justify-center p-0.5 flex-shrink-0">
+          <img src="./assets/logo.svg" alt="Anixss-PDFer" class="w-full h-full object-contain" />
+        </div>
+        <span class="font-bold text-black font-mono">Anixss-PDFer</span>
+      </div>
+      <span class="hidden sm:inline text-neutral-400">•</span>
+      <div class="flex items-center gap-3 text-neutral-600 font-mono text-[11px]">
+        <a href="https://aniketsonwane.github.io/AniketSonwane-Socials/" target="_blank" rel="noopener noreferrer" class="hover:underline hover:text-black transition-colors">Developed by <span class="font-bold text-black">Anixss</span></a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Application Scripts -->
+  <script src="./js/converters.js"></script>
+  <script src="./js/pdf-preview.js"></script>
+  <script src="./js/pdf-tools.js"></script>
+  <script src="./js/file-transfer.js"></script>
+  <script src="./js/app.js"></script>
+</body>
+</html>

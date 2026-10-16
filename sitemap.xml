@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
+        http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
+
+  <!-- Homepage -->
+  <url>
+    <loc>https://anixss-pdfer.com/</loc>
+    <lastmod>2026-10-16</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+
+  <!-- About & Security Guarantee -->
+  <url>
+    <loc>https://anixss-pdfer.com/about.html</loc>
+    <lastmod>2026-10-16</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- Tool 01: Merge PDF -->
+  <url>
+    <loc>https://anixss-pdfer.com/merge.html</loc>
+    <lastmod>2026-10-16</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- Tool 02: Remove Pages -->
+  <url>
+    <loc>https://anixss-pdfer.com/remove-pages.html</loc>
+    <lastmod>2026-10-16</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- Tool 03: Add Pages -->
+  <url>
+    <loc>https://anixss-pdfer.com/add-pages.html</loc>
+    <lastmod>2026-10-16</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- Tool 04: Resize PDF -->
+  <url>
+    <loc>https://anixss-pdfer.com/resize.html</loc>
+    <lastmod>2026-10-16</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- Tool 05: Rotate PDF -->
+  <url>
+    <loc>https://anixss-pdfer.com/rotate.html</loc>
+    <lastmod>2026-10-16</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- Tool 06: Image to PDF -->
+  <url>
+    <loc>https://anixss-pdfer.com/image-to-pdf.html</loc>
+    <lastmod>2026-10-16</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- Tool 07: PDF to Image -->
+  <url>
+    <loc>https://anixss-pdfer.com/pdf-to-image.html</loc>
+    <lastmod>2026-10-16</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- Tool 08: Watermark PDF -->
+  <url>
+    <loc>https://anixss-pdfer.com/watermark.html</loc>
+    <lastmod>2026-10-16</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- Tool 09: Hide Content / Redact -->
+  <url>
+    <loc>https://anixss-pdfer.com/redact.html</loc>
+    <lastmod>2026-10-16</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- Tool 10: Page Numbers -->
+  <url>
+    <loc>https://anixss-pdfer.com/page-numbers.html</loc>
+    <lastmod>2026-10-16</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- Tool 11: Multi-Page per Sheet (N-Up) -->
+  <url>
+    <loc>https://anixss-pdfer.com/n-up.html</loc>
+    <lastmod>2026-10-16</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- Tool 12: Split PDF -->
+  <url>
+    <loc>https://anixss-pdfer.com/split.html</loc>
+    <lastmod>2026-10-16</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- Tool 13: Organize Pages -->
+  <url>
+    <loc>https://anixss-pdfer.com/organize-pages.html</loc>
+    <lastmod>2026-10-16</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+</urlset>

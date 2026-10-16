@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://anixss-pdfer.com/sitemap.xml
